@@ -27,6 +27,7 @@ type Car struct {
 	minSpeed      float64
 	maxSpeed      float64
 	handling      float64 // управляемость
+	speedHandling float64 // доля снижаемости управляемости на скорости
 	wheelAngle    float64
 	maxWheelAngle float64
 	health        int
@@ -48,7 +49,8 @@ func NewSportCar(angle helper.Degrees) *Car {
 		powerful:      160,
 		minSpeed:      helper.KmphToPixelsPerTick(-54),
 		maxSpeed:      helper.KmphToPixelsPerTick(180),
-		handling:      0.5,
+		handling:      0.02,
+		speedHandling: 0.7,
 		maxWheelAngle: helper.ToRadians(45),
 		health:        100,
 		maxHealth:     100,
@@ -72,20 +74,25 @@ func (c *Car) Control(accelerate float64, wheelRotation float64) {
 	} else {
 		c.speed = helper.Limited(c.speed+accelerate*powerful, minSpeed, maxSpeed)
 	}
-	c.wheelAngle = helper.Limited((c.wheelAngle+wheelRotation)*c.handling, -c.maxWheelAngle, c.maxWheelAngle)
-	if math.Abs(c.speed) > 2 {
-		c.wheelAngle *= (maxSpeed - math.Abs(c.speed)/2) / maxSpeed
-	}
+	maxWheelAngle := c.maxWheelAngle * (maxSpeed - math.Abs(c.speed)*c.speedHandling) / maxSpeed
+	newWheelAngle := helper.Stepped(c.wheelAngle, wheelRotation*maxWheelAngle, c.handling)
+	c.wheelAngle = helper.Limited(newWheelAngle, -maxWheelAngle, maxWheelAngle)
+
 	c.Position.Angle += math.Atan2(c.WheelBase*math.Tan(c.wheelAngle), c.Size.Length+c.WheelBase) * c.speed * 0.03
 	c.Position.X += c.speed * math.Cos(c.Position.Angle)
 	c.Position.Y += c.speed * math.Sin(c.Position.Angle)
 
-	//fmt.Printf("speed: %f, wheelAngle: %f, angle: %f, x: %f, y: %f\n", c.speed, c.wheelAngle, c.Position.Angle, c.Position.X, c.Position.Y)
 	framework.DebugWatchAdd("Speed", func() string {
 		return fmt.Sprintf("%f", c.speed)
 	})
-	framework.DebugWatchAdd("Inertion", func() string {
-		return fmt.Sprintf("%f", inertion)
+	framework.DebugWatchAdd("newWheelAngle", func() string {
+		return fmt.Sprintf("%f", newWheelAngle)
+	})
+	framework.DebugWatchAdd("wheelAngle", func() string {
+		return fmt.Sprintf("%f", c.wheelAngle)
+	})
+	framework.DebugWatchAdd("maxWheelAngle", func() string {
+		return fmt.Sprintf("%f", maxWheelAngle)
 	})
 }
 

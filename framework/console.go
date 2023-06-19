@@ -16,6 +16,7 @@ import (
 )
 
 type Console struct {
+	ToggleKey   ebiten.Key
 	Text        string
 	IsAvailable bool
 	IsOpened    bool
@@ -29,6 +30,7 @@ type Console struct {
 
 func NewConsole() *Console {
 	return &Console{
+		ToggleKey:   ebiten.KeyBackquote,
 		Text:        "",
 		IsAvailable: false,
 		IsOpened:    false,
@@ -82,7 +84,7 @@ func (c *Console) Draw(screen *ebiten.Image, fromX, fromY, toX, toY int) {
 
 func (c *Console) Update(f *Framework) {
 	k, ok := f.IsPrintableKeyJustPressed()
-	if ok {
+	if ok && k != c.ToggleKey {
 		c.inputText += f.KeyToSymbol(k)
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyBackspace) {

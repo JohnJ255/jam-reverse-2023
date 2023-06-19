@@ -55,7 +55,7 @@ func (f *Framework) Update() error {
 		return nil
 	}
 
-	if f.console.IsAvailable && inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+	if f.console.IsAvailable && inpututil.IsKeyJustPressed(f.console.ToggleKey) {
 		f.console.Toggle()
 	}
 

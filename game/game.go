@@ -82,7 +82,9 @@ func (g *Game) Update(dt float64) error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.DrawImage(g.level.GetSprite(), g.level.GetTransforms(1))
+	if g.level != nil {
+		screen.DrawImage(g.level.GetSprite(), g.level.GetTransforms(1))
+	}
 
 	screen.DrawImage(g.player.GetSprite(), g.player.GetTransforms(1))
 }

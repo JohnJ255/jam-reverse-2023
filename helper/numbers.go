@@ -1,5 +1,7 @@
 package helper
 
+import "math"
+
 type numbers interface{ int | float64 }
 
 func Limited[T numbers](x, min, max T) T {
@@ -10,4 +12,14 @@ func Limited[T numbers](x, min, max T) T {
 		return max
 	}
 	return x
+}
+
+func Stepped(from, to, stepSize float64) float64 {
+	if math.Abs(from-to) <= stepSize {
+		return to
+	}
+	if from > to {
+		return from - stepSize
+	}
+	return from + stepSize
 }

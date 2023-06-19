@@ -11,3 +11,8 @@ type Controlling interface {
 	Drawing
 	Control(params interface{})
 }
+
+type BaseEntity struct {
+	Imgs      []*ebiten.Image
+	DrawAngle float64
+}
