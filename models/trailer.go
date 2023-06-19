@@ -1,6 +1,9 @@
 package models
 
-import "reverse-jam-2023/helper"
+import (
+	"math"
+	"reverse-jam-2023/helper"
+)
 
 type TowbarInterface interface {
 	GetPosition() helper.DirectionPosition
@@ -17,6 +20,7 @@ const (
 
 type Trailer struct {
 	Trailer      TrailerJoin
+	Traktor      TowbarInterface
 	Position     helper.DirectionPosition
 	Size         helper.Size
 	Pivot        helper.PositionUV
@@ -27,9 +31,8 @@ type Trailer struct {
 	mass         float64
 }
 
-func NewTrailer(pos helper.DirectionPosition, size helper.Size, mass float64, trType TrailerType) *Trailer {
+func NewTrailer(size helper.Size, mass float64, trType TrailerType) *Trailer {
 	return &Trailer{
-		Position:     pos,
 		Size:         size,
 		Pivot:        helper.PositionUV{1, 0.5},
 		maxHealth:    100,
@@ -44,7 +47,9 @@ func NewTrailerToBackOfTractor(trac TowbarInterface, size helper.Size, mass floa
 	pos := trac.GetPosition()
 	pos.X = trac.GetTowbarPosition().X
 	pos.Y = trac.GetTowbarPosition().Y
-	return NewTrailer(pos, size, mass, trType)
+	t := NewTrailer(size, mass, trType)
+	t.Position = pos
+	return t
 }
 
 func (t *Trailer) getSelfMass() float64 {
@@ -70,4 +75,14 @@ func (t *Trailer) GetPivot() helper.PositionUV {
 func (t *Trailer) calcInertionDependsMass() float64 {
 	k := 1 + (massEtalon-t.mass)/massEtalon
 	return helper.Limited(t.baseInertion-k/10, 0.9, 0.999)
+}
+
+func (t *Trailer) AddTraktor(c TowbarInterface) {
+	t.Traktor = c
+}
+
+func (t *Trailer) GetTowbarLocalPosition() helper.Position {
+	x := t.Size.Length * t.Pivot.U * math.Cos(t.Position.Angle)
+	y := t.Size.Width * t.Pivot.V * math.Sin(t.Position.Angle)
+	return helper.Position{x, y}
 }

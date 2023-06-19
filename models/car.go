@@ -14,6 +14,7 @@ type TrailerJoin interface {
 	getFullMass() float64
 	getFrictionForce() float64
 	GetPivot() helper.PositionUV
+	AddTraktor(towbar TowbarInterface)
 }
 
 type Car struct {
@@ -114,6 +115,7 @@ func (c *Car) getFrictionForce() float64 {
 
 func (c *Car) AddTrailer(cargo TrailerJoin) {
 	c.Trailer = cargo
+	cargo.AddTraktor(c)
 }
 
 func (c *Car) calcInertionDependsMass() float64 {

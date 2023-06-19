@@ -16,7 +16,7 @@ type CarEntity struct {
 
 func NewCar(ct framework.ControlType, car *models.Car) *CarEntity {
 	c := &CarEntity{
-		SpriteEntity: framework.InitSprites(-math.Pi / 2),
+		SpriteEntity: framework.InitSprites(math.Pi / 2),
 		Car:          car,
 		IsPlayer:     ct == framework.Player,
 	}

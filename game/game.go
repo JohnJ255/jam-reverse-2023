@@ -40,8 +40,9 @@ func (g *Game) Start(f *framework.Framework) {
 		if err != nil {
 			f.MessageToConsole("invalid parameter: need trailer type")
 		}
-		trailer := models.NewTrailerToBackOfTractor(p.Car, p.Car.Size, 400, models.TrailerType(trType))
-		p.Car.AddTrailer(trailer)
+		var trailer = entities.NewTrailerToBackOfTractor(p.Car, p.Car.Size, 400, models.TrailerType(trType))
+		p.Car.AddTrailer(trailer.Trailer)
+		f.AddEntity(trailer)
 		return "trailer added"
 	})
 	f.SetConsoleCommand("towbar", func(params ...string) string {
@@ -52,6 +53,10 @@ func (g *Game) Start(f *framework.Framework) {
 				vector.DrawFilledCircle(screen, float32(pos.X), float32(pos.Y), 4, color.NRGBA{0, 255, 0, 255}, false)
 				pos = p.Car.GetPosition().Position
 				vector.DrawFilledCircle(screen, float32(pos.X), float32(pos.Y), 4, color.NRGBA{0, 0, 255, 255}, false)
+				if p.Car.Trailer != nil {
+					pos = p.Car.Trailer.(*models.Trailer).Position.Position
+					vector.DrawFilledCircle(screen, float32(pos.X), float32(pos.Y), 3, color.NRGBA{200, 200, 15, 255}, false)
+				}
 			})
 			return "towbar added"
 		}
@@ -59,6 +64,7 @@ func (g *Game) Start(f *framework.Framework) {
 		return "towbar removed"
 	})
 	f.MakeConsoleCommand("towbar 1")
+	f.MakeConsoleCommand("trailer 1")
 }
 
 func (g *Game) Update(dt float64) error {
