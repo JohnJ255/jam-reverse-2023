@@ -7,10 +7,21 @@ import (
 	"reverse-jam-2023/helper"
 )
 
+const massEtalon = 1000
+
+type TrailerJoin interface {
+	getSelfMass() float64
+	getFullMass() float64
+	getFrictionForce() float64
+	GetPivot() helper.PositionUV
+}
+
 type Car struct {
+	Trailer       TrailerJoin
 	Position      helper.DirectionPosition
 	Size          helper.Size
 	WheelBase     float64
+	Pivot         helper.PositionUV
 	speed         float64
 	powerful      float64
 	minSpeed      float64
@@ -20,11 +31,9 @@ type Car struct {
 	maxWheelAngle float64
 	health        int
 	maxHealth     int
-	inertion      float64
+	baseInertion  float64
 	mass          float64
 }
-
-const massEtalon = 1000
 
 func NewSportCar(angle helper.Degrees) *Car {
 	return &Car{
@@ -32,9 +41,10 @@ func NewSportCar(angle helper.Degrees) *Car {
 			Angle: helper.ToRadians(angle),
 		},
 		Size: helper.Size{
-			Width:  40,
-			Length: 100,
+			Width:  56,
+			Length: 114,
 		},
+		Pivot:         helper.PositionUV{0.2, 0.5},
 		powerful:      160,
 		minSpeed:      helper.KmphToPixelsPerTick(-54),
 		maxSpeed:      helper.KmphToPixelsPerTick(180),
@@ -43,7 +53,7 @@ func NewSportCar(angle helper.Degrees) *Car {
 		health:        100,
 		maxHealth:     100,
 		WheelBase:     80,
-		inertion:      0.95,
+		baseInertion:  0.97,
 		mass:          800,
 	}
 }
@@ -53,8 +63,9 @@ func (c *Car) Control(accelerate float64, wheelRotation float64) {
 	k := 1 + (massEtalon-c.mass)/massEtalon
 	minSpeed := c.minSpeed * k
 	maxSpeed := c.maxSpeed * k
+	inertion := c.calcInertionDependsMass()
 	if accelerate == 0 && c.speed != 0 {
-		c.speed *= c.inertion
+		c.speed *= inertion
 		if math.Abs(c.speed) < powerful {
 			c.speed = 0
 		}
@@ -73,5 +84,50 @@ func (c *Car) Control(accelerate float64, wheelRotation float64) {
 	framework.DebugWatchAdd("Speed", func() string {
 		return fmt.Sprintf("%f", c.speed)
 	})
+	framework.DebugWatchAdd("Inertion", func() string {
+		return fmt.Sprintf("%f", inertion)
+	})
+}
 
+func (c *Car) getSelfMass() float64 {
+	return c.mass
+}
+
+func (c *Car) getFullMass() float64 {
+	if c.Trailer != nil {
+		return c.mass + c.Trailer.getFullMass()
+	}
+
+	return c.getSelfMass()
+}
+
+func (c *Car) getFrictionForce() float64 {
+	return 1 - c.calcInertionDependsMass()
+}
+
+func (c *Car) AddTrailer(cargo TrailerJoin) {
+	c.Trailer = cargo
+}
+
+func (c *Car) calcInertionDependsMass() float64 {
+	mass := c.mass
+	if c.Trailer != nil {
+		mass += c.Trailer.getSelfMass()
+	}
+	k := 1 + (massEtalon-mass)/massEtalon
+	return helper.Limited(c.baseInertion-k/10, 0.9, 0.999)
+}
+
+func (c *Car) GetPivot() helper.PositionUV {
+	return c.Pivot
+}
+
+func (c *Car) GetPosition() helper.DirectionPosition {
+	return c.Position
+}
+
+func (c *Car) GetTowbarPosition() helper.Position {
+	x := c.Position.X - c.Size.Length*c.Pivot.U*math.Cos(c.Position.Angle)
+	y := c.Position.Y - c.Size.Width*c.Pivot.V*math.Sin(c.Position.Angle)*0.8
+	return helper.Position{x, y}
 }
