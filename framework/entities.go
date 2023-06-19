@@ -2,7 +2,7 @@ package framework
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"image"
+	"math"
 	"reverse-jam-2023/helper"
 )
 
@@ -56,13 +56,16 @@ func (b *SpriteEntity) getBaseSprite() *ebiten.Image {
 
 func (b *SpriteEntity) PivotTransform(scale float64, size helper.Size, pivot helper.PositionUV) *ebiten.DrawImageOptions {
 	op := &ebiten.DrawImageOptions{}
-	spriteSize := image.Point{b.GetSprite().Bounds().Size().Y, b.GetSprite().Bounds().Size().X}
-	scaleX := scale * size.Length / float64(spriteSize.X)
-	scaleY := scale * size.Width / float64(spriteSize.Y)
-	op.GeoM.Rotate(-b.DrawAngle)
+
+	op.GeoM.Rotate(b.DrawAngle)
+
+	spriteSize := b.GetSprite().Bounds().Size()
+	scaleX := scale * size.Length / (float64(spriteSize.X)*math.Cos(b.DrawAngle) + float64(spriteSize.Y)*math.Sin(b.DrawAngle))
+	scaleY := scale * size.Width / (float64(spriteSize.X)*math.Sin(b.DrawAngle) + float64(spriteSize.Y)*math.Cos(b.DrawAngle))
+	op.GeoM.Scale(scaleX, scaleY)
+
 	tx := size.Length * (1 - pivot.U)
 	ty := -size.Width * pivot.V
-	op.GeoM.Scale(scaleX, scaleY)
 	op.GeoM.Translate(tx, ty)
 
 	return op
