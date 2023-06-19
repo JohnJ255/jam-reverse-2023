@@ -12,7 +12,7 @@ import (
 )
 
 type Game struct {
-	player     framework.Controlling
+	player     *entities.CarEntity
 	level      framework.Drawing
 	WindowSize helper.IntSize
 	scale      float64
@@ -32,9 +32,10 @@ func NewGame() *Game {
 }
 
 func (g *Game) Start(f *framework.Framework) {
+	f.AddEntity(g.player)
 	f.DebugModeEnable()
 	f.SetConsoleCommand("trailer", func(params ...string) string {
-		p := g.player.(*entities.CarEntity)
+		p := g.player
 		trType, err := strconv.Atoi(params[0])
 		if err != nil {
 			f.MessageToConsole("invalid parameter: need trailer type")
@@ -44,7 +45,7 @@ func (g *Game) Start(f *framework.Framework) {
 		return "trailer added"
 	})
 	f.SetConsoleCommand("towbar", func(params ...string) string {
-		p := g.player.(*entities.CarEntity)
+		p := g.player
 		if params[0] == "1" {
 			f.SetDebugDraw("towbar", func(screen *ebiten.Image) {
 				pos := p.Car.GetTowbarPosition()
@@ -61,23 +62,6 @@ func (g *Game) Start(f *framework.Framework) {
 }
 
 func (g *Game) Update(dt float64) error {
-	accelerate := 0.0
-	wheel := 0.0
-	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		wheel = -1
-	} else if ebiten.IsKeyPressed(ebiten.KeyRight) {
-		wheel = 1
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyUp) {
-		accelerate = 1.0
-	} else if ebiten.IsKeyPressed(ebiten.KeyDown) {
-		accelerate = -0.3
-	}
-	g.player.Control(map[string]float64{
-		"accelerate": accelerate,
-		"wheel":      wheel,
-	})
-
 	return nil
 }
 
@@ -85,8 +69,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	if g.level != nil {
 		screen.DrawImage(g.level.GetSprite(), g.level.GetTransforms(1))
 	}
-
-	screen.DrawImage(g.player.GetSprite(), g.player.GetTransforms(1))
 }
 
 func (g *Game) GetTitle() string {

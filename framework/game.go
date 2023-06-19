@@ -16,6 +16,7 @@ type Game interface {
 
 type Framework struct {
 	game         Game
+	entities     []Entity
 	lastUpdate   time.Time
 	console      *Console
 	windowWidth  int
@@ -32,6 +33,7 @@ func InitWindowGame(g Game, windowWidth, windowHeight int, windowTitle string) *
 	ebiten.SetWindowTitle(windowTitle)
 	fw = &Framework{
 		game:         g,
+		entities:     make([]Entity, 0),
 		windowWidth:  windowWidth,
 		windowHeight: windowHeight,
 		windowTitle:  windowTitle,
@@ -65,11 +67,19 @@ func (f *Framework) Update() error {
 		return nil
 	}
 
+	for _, e := range f.entities {
+		e.Update(dt)
+	}
+
 	return f.game.Update(dt)
 }
 
 func (f *Framework) Draw(screen *ebiten.Image) {
 	f.game.Draw(screen)
+	for _, e := range f.entities {
+		screen.DrawImage(e.GetSprite(), e.GetTransforms(1))
+	}
+
 	if f.console.IsOpened {
 		f.console.Draw(screen, 0, 0, f.windowWidth, f.windowHeight/3)
 	}
@@ -78,7 +88,7 @@ func (f *Framework) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (g *Framework) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
+func (f *Framework) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	return outsideWidth, outsideHeight
 }
 
@@ -119,4 +129,8 @@ func (f *Framework) MakeConsoleCommand(s string) {
 	} else {
 		f.console.makeCommand(params[0], params[1:]...)
 	}
+}
+
+func (f *Framework) AddEntity(entity Entity) {
+	f.entities = append(f.entities, entity)
 }

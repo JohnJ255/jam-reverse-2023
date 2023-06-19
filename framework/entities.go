@@ -11,16 +11,18 @@ type Drawing interface {
 	GetTransforms(scale float64) *ebiten.DrawImageOptions
 }
 
-type Controlling interface {
-	Drawing
-	Control(params interface{})
-}
-
 type ResourceLoader interface {
 	GetSprite(fileName string) *ebiten.Image
 }
 
+type Entity interface {
+	GetTransforms(scale float64) *ebiten.DrawImageOptions
+	GetSprite() *ebiten.Image
+	Update(dt float64)
+}
+
 type SpriteEntity struct {
+	Visible         bool
 	Imgs            []*ebiten.Image
 	DrawAngle       float64
 	GetSpriteFunc   func() *ebiten.Image
@@ -29,6 +31,7 @@ type SpriteEntity struct {
 
 func InitSprites(angle float64) *SpriteEntity {
 	b := &SpriteEntity{
+		Visible:   true,
 		DrawAngle: angle,
 		Imgs:      make([]*ebiten.Image, 0),
 	}

@@ -10,13 +10,15 @@ import (
 
 type CarEntity struct {
 	*framework.SpriteEntity
-	Car *models.Car
+	Car      *models.Car
+	IsPlayer bool
 }
 
 func NewCar(ct framework.ControlType, car *models.Car) *CarEntity {
 	c := &CarEntity{
 		SpriteEntity: framework.InitSprites(-math.Pi / 2),
 		Car:          car,
+		IsPlayer:     ct == framework.Player,
 	}
 	car.Position.X = 100
 	car.Position.Y = 100
@@ -33,14 +35,25 @@ func (c *CarEntity) GetTransforms(scale float64) *ebiten.DrawImageOptions {
 	return op
 }
 
-func (c *CarEntity) Control(params interface{}) {
-	var accelerate float64
-	var wheel float64
-	switch v := params.(type) {
-	case map[string]float64:
-		accelerate = v["accelerate"]
-		wheel = v["wheel"]
+func (c *CarEntity) Control() {
+	accelerate := 0.0
+	wheel := 0.0
+	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
+		wheel = -1
+	} else if ebiten.IsKeyPressed(ebiten.KeyRight) {
+		wheel = 1
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyUp) {
+		accelerate = 1.0
+	} else if ebiten.IsKeyPressed(ebiten.KeyDown) {
+		accelerate = -0.3
 	}
 
 	c.Car.Control(accelerate, wheel)
+}
+
+func (c *CarEntity) Update(dt float64) {
+	if c.IsPlayer {
+		c.Control()
+	}
 }
