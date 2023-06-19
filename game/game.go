@@ -51,11 +51,11 @@ func (g *Game) Start(f *framework.Framework) {
 			f.SetDebugDraw("towbar", func(screen *ebiten.Image) {
 				pos := p.Car.GetTowbarPosition()
 				vector.DrawFilledCircle(screen, float32(pos.X), float32(pos.Y), 4, color.NRGBA{0, 255, 0, 255}, false)
-				pos = p.Car.GetPosition().Position
+				pos = p.Car.GetPosition().Vec2
 				vector.DrawFilledCircle(screen, float32(pos.X), float32(pos.Y), 4, color.NRGBA{0, 0, 255, 255}, false)
 				if p.Car.Trailer != nil {
-					pos = p.Car.Trailer.(*models.Trailer).Position.Position
-					vector.DrawFilledCircle(screen, float32(pos.X), float32(pos.Y), 3, color.NRGBA{200, 200, 15, 255}, false)
+					pos = p.Car.Trailer.(*models.Trailer).Position.Vec2
+					vector.DrawFilledCircle(screen, float32(pos.X), float32(pos.Y), 3, color.NRGBA{160, 160, 65, 255}, false)
 				}
 			})
 			return "towbar added"

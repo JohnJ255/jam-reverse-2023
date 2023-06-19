@@ -2,7 +2,9 @@ package helper
 
 import "math"
 
-type numbers interface{ int | float64 }
+type numbers interface {
+	int | float64 | Radian | Degrees
+}
 
 func Limited[T numbers](x, min, max T) T {
 	if x < min {

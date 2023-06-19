@@ -7,7 +7,7 @@ import (
 
 type TowbarInterface interface {
 	GetPosition() helper.DirectionPosition
-	GetTowbarPosition() helper.Position
+	GetTowbarPosition() helper.Vec2
 }
 
 type TrailerType int
@@ -23,7 +23,7 @@ type Trailer struct {
 	Traktor      TowbarInterface
 	Position     helper.DirectionPosition
 	Size         helper.Size
-	Pivot        helper.PositionUV
+	Pivot        helper.VecUV
 	trType       TrailerType
 	health       int
 	maxHealth    int
@@ -34,7 +34,7 @@ type Trailer struct {
 func NewTrailer(size helper.Size, mass float64, trType TrailerType) *Trailer {
 	return &Trailer{
 		Size:         size,
-		Pivot:        helper.PositionUV{1, 0.5},
+		Pivot:        helper.VecUV{1, 0.5},
 		maxHealth:    100,
 		health:       100,
 		mass:         mass,
@@ -68,7 +68,7 @@ func (t *Trailer) getFrictionForce() float64 {
 	return 1 - t.calcInertionDependsMass()
 }
 
-func (t *Trailer) GetPivot() helper.PositionUV {
+func (t *Trailer) GetPivot() helper.VecUV {
 	return t.Pivot
 }
 
@@ -81,8 +81,13 @@ func (t *Trailer) AddTraktor(c TowbarInterface) {
 	t.Traktor = c
 }
 
-func (t *Trailer) GetTowbarLocalPosition() helper.Position {
-	x := t.Size.Length * t.Pivot.U * math.Cos(t.Position.Angle)
-	y := t.Size.Width * t.Pivot.V * math.Sin(t.Position.Angle)
-	return helper.Position{x, y}
+func (t *Trailer) GetTowbarLocalPosition() helper.Vec2 {
+	x := t.Size.Length * t.Pivot.U * math.Cos(float64(t.Position.Angle))
+	y := t.Size.Width * t.Pivot.V * math.Sin(float64(t.Position.Angle))
+	return helper.Vec2{x, y}
+}
+
+func (t *Trailer) Control(velocity helper.Vec2) {
+	t.Position.X = t.Traktor.GetTowbarPosition().X - t.GetTowbarLocalPosition().X
+	t.Position.Y = t.Traktor.GetTowbarPosition().Y - t.GetTowbarLocalPosition().Y
 }

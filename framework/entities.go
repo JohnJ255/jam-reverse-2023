@@ -54,7 +54,7 @@ func (b *SpriteEntity) getBaseSprite() *ebiten.Image {
 	return b.Imgs[b.CurrentImgIndex]
 }
 
-func (b *SpriteEntity) PivotTransform(scale float64, size helper.Size, pivot helper.PositionUV) *ebiten.DrawImageOptions {
+func (b *SpriteEntity) PivotTransform(scale float64, size helper.Size, pivot helper.VecUV) *ebiten.DrawImageOptions {
 	op := &ebiten.DrawImageOptions{}
 
 	op.GeoM.Rotate(b.DrawAngle)

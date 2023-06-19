@@ -29,7 +29,7 @@ func NewCar(ct framework.ControlType, car *models.Car) *CarEntity {
 
 func (c *CarEntity) GetTransforms(scale float64) *ebiten.DrawImageOptions {
 	op := c.PivotTransform(scale, c.Car.Size, c.Car.Pivot)
-	op.GeoM.Rotate(c.Car.Position.Angle)
+	op.GeoM.Rotate(float64(c.Car.Position.Angle))
 	op.GeoM.Translate(c.Car.Position.X, c.Car.Position.Y)
 
 	return op
