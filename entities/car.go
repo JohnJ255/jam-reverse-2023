@@ -2,6 +2,7 @@ package entities
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"image"
 	"math"
 	"reverse-jam-2023/framework"
 	"reverse-jam-2023/loader"
@@ -20,6 +21,8 @@ func NewCar(ct framework.ControlType, car *models.Car) *CarEntity {
 		Car:       car,
 		DrawAngle: -math.Pi / 2,
 	}
+	car.Position.X = 100
+	car.Position.Y = 100
 	res := &loader.Resource{}
 	for _, fileName := range loader.FileNames[ct] {
 		img := res.GetSprite(fileName)
@@ -35,10 +38,16 @@ func (c *CarEntity) GetSprite() *ebiten.Image {
 
 func (c *CarEntity) GetTransforms(scale float64) *ebiten.DrawImageOptions {
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Scale(scale, scale)
-	op.GeoM.Translate(-c.Car.Size.Width/2, -c.Car.Size.Length/2)
-	op.GeoM.Rotate(c.Car.Position.Angle - c.DrawAngle)
-	op.GeoM.Translate(c.Car.Position.X+100, c.Car.Position.Y+100)
+	spriteSize := image.Point{c.GetSprite().Bounds().Size().Y, c.GetSprite().Bounds().Size().X}
+	scaleX := scale * c.Car.Size.Length / float64(spriteSize.X)
+	scaleY := scale * c.Car.Size.Width / float64(spriteSize.Y)
+	op.GeoM.Rotate(-c.DrawAngle)
+	tx := c.Car.Size.Length * (1 - c.Car.Pivot.U)
+	ty := -c.Car.Size.Width * c.Car.Pivot.V
+	op.GeoM.Scale(scaleX, scaleY)
+	op.GeoM.Translate(tx, ty)
+	op.GeoM.Rotate(c.Car.Position.Angle)
+	op.GeoM.Translate(c.Car.Position.X, c.Car.Position.Y)
 
 	return op
 }
