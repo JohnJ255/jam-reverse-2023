@@ -11,6 +11,7 @@ import (
 	"golang.org/x/image/font/gofont/goregular"
 	"image/color"
 	"log"
+	"reverse-jam-2023/helper"
 	"strings"
 )
 
@@ -73,8 +74,8 @@ func (c *Console) Draw(screen *ebiten.Image, fromX, fromY, toX, toY int) {
 	watchFromX := (toX - fromX) * 2 / 3
 	watchFromY := fromY + fontHeight + 5 + c.Padding[0]
 	text.Draw(screen, "Watch", face, watchFromX, fromY+c.Padding[0]+fontHeight, c.Foreground)
-	for wn, wv := range c.watch {
-		text.Draw(screen, fmt.Sprintf("%s: %s", wn, wv()), face, watchFromX+c.Padding[3], watchFromY+c.Padding[0]+fontHeight, c.Foreground)
+	for lineIndex, wn := range helper.SortedKeys(c.watch) {
+		text.Draw(screen, fmt.Sprintf("%s: %s", wn, c.watch[wn]()), face, watchFromX+c.Padding[3], watchFromY+2*c.Padding[0]+(fontHeight+2)*lineIndex, c.Foreground)
 	}
 	vector.StrokeRect(screen, float32(watchFromX), float32(watchFromY), float32(toX-watchFromX), float32(toY-watchFromY), 2, color.White, false)
 }
@@ -85,11 +86,13 @@ func (c *Console) Update(f *Framework) {
 		c.inputText += f.KeyToSymbol(k)
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyBackspace) {
-		c.inputText = c.inputText[:len(c.inputText)-1]
+		if len(c.inputText) > 0 {
+			c.inputText = c.inputText[:len(c.inputText)-1]
+		}
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 		cmd := strings.Split(c.inputText, " ")
-		c.Text += c.inputText + "\n"
+		c.Println(c.inputText)
 		c.makeCommand(cmd[0], cmd[1:]...)
 		c.inputText = ""
 	}
@@ -97,9 +100,9 @@ func (c *Console) Update(f *Framework) {
 
 func (c *Console) makeCommand(name string, params ...string) {
 	if do, ok := c.commands[name]; ok {
-		c.Text += do(params...) + "\n"
+		c.Println(do(params...))
 	} else {
-		c.Text += "Unknown command: " + name + "\n"
+		c.Println("Unknown command: " + name)
 	}
 }
 

@@ -17,4 +17,8 @@ type Position struct {
 	X, Y float64
 }
 
+type PositionUV struct {
+	U, V float64
+}
+
 type Degrees float64

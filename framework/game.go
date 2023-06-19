@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"strings"
 	"time"
 )
 
@@ -21,6 +22,7 @@ type Framework struct {
 	windowHeight int
 	windowTitle  string
 	ticks        uint64
+	debugDraws   map[string]func(screen *ebiten.Image)
 }
 
 var fw *Framework
@@ -34,6 +36,7 @@ func InitWindowGame(g Game, windowWidth, windowHeight int, windowTitle string) *
 		windowHeight: windowHeight,
 		windowTitle:  windowTitle,
 		console:      NewConsole(),
+		debugDraws:   make(map[string]func(screen *ebiten.Image)),
 	}
 	return fw
 }
@@ -70,6 +73,9 @@ func (f *Framework) Draw(screen *ebiten.Image) {
 	if f.console.IsOpened {
 		f.console.Draw(screen, 0, 0, f.windowWidth, f.windowHeight/3)
 	}
+	for _, drawer := range f.debugDraws {
+		drawer(screen)
+	}
 }
 
 func (g *Framework) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
@@ -91,4 +97,26 @@ func DebugWatchAdd(name string, valSource func() string) {
 func (f *Framework) DebugModeEnable() {
 	f.console.IsAvailable = true
 	f.console.Println("Debug mode enabled")
+}
+
+func (f *Framework) MessageToConsole(msg string) {
+	f.console.Println(msg)
+}
+
+func (f *Framework) SetDebugDraw(name string, drawer func(screen *ebiten.Image)) {
+	f.debugDraws[name] = drawer
+}
+
+func (f *Framework) RemoveDebugDraw(name string) {
+	delete(f.debugDraws, name)
+}
+
+func (f *Framework) MakeConsoleCommand(s string) {
+	f.console.Println(s)
+	params := strings.Split(s, " ")
+	if len(params) == 1 {
+		f.console.makeCommand(params[0])
+	} else {
+		f.console.makeCommand(params[0], params[1:]...)
+	}
 }
