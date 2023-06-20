@@ -9,14 +9,14 @@ import (
 )
 
 type TrailerEntity struct {
-	*framework.SpriteEntity
+	*framework.Sprite
 	Trailer *models.Trailer
 }
 
 func NewTrailer(pos helper.DirectionPosition, size helper.Size, mass float64, trType models.TrailerType) *TrailerEntity {
 	t := &TrailerEntity{
-		SpriteEntity: framework.InitSprites(),
-		Trailer:      models.NewTrailer(size, mass, trType),
+		Sprite:  framework.InitSprites(),
+		Trailer: models.NewTrailer(size, mass, trType),
 	}
 	t.Trailer.Position = pos
 	t.LoadResources(&loader.ResourceLoader{}, loader.TrailerFileNames[trType])

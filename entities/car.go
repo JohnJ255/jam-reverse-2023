@@ -8,16 +8,16 @@ import (
 )
 
 type CarEntity struct {
-	*framework.SpriteEntity
+	*framework.Sprite
 	Car      *models.Car
 	IsPlayer bool
 }
 
 func NewCar(ct framework.ControlType, car *models.Car) *CarEntity {
 	c := &CarEntity{
-		SpriteEntity: framework.InitSprites(),
-		Car:          car,
-		IsPlayer:     ct == framework.Player,
+		Sprite:   framework.InitSprites(),
+		Car:      car,
+		IsPlayer: ct == framework.Player,
 	}
 	c.LoadResources(&loader.ResourceLoader{}, loader.CarFileNames[ct])
 

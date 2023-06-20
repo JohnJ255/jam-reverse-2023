@@ -31,6 +31,10 @@ var AngleBottom = Radian(-math.Pi / 2)
 var AngleLeft = Radian(math.Pi)
 var AngleRight = Radian(0)
 
+func NewDPos(x, y, a float64) DirectionPosition {
+	return DirectionPosition{Vec2{X: x, Y: y}, Radian(a)}
+}
+
 func (d Degrees) ToRadians() Radian {
 	return Radian(float64(d) * math.Pi / 180)
 }

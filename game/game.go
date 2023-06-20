@@ -24,7 +24,7 @@ func NewGame() *Game {
 	car.Position.Y = 100
 	return &Game{
 		player: entities.NewCar(framework.Player, car),
-		level:  entities.NewLevel(0),
+		level:  entities.NewLevel(1),
 		WindowSize: helper.IntSize{
 			Width:  800,
 			Height: 600,
@@ -42,9 +42,14 @@ func (g *Game) Start(f *framework.Framework) {
 		if err != nil {
 			f.MessageToConsole("invalid parameter: need trailer type")
 		}
-		var trailer = entities.NewTrailerToBackOfTractor(p.Car, p.Car.Size, 400, models.TrailerType(trType))
-		p.Car.AddTrailer(trailer.Trailer)
-		f.AddEntity(trailer)
+		if trType == 1 {
+			var trailer = entities.NewTrailerToBackOfTractor(p.Car, p.Car.Size, 400, models.TrailerType(trType))
+			p.Car.AddTrailer(trailer.Trailer)
+			f.AddEntity(trailer)
+		} else {
+			var trailer = entities.NewTrailer(helper.NewDPos(200, 200, 0), p.Car.Size, 400, models.TrailerType(trType))
+			f.AddEntity(trailer)
+		}
 		return "trailer added"
 	})
 	f.SetConsoleCommand("towbar", func(params ...string) string {
