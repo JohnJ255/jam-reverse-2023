@@ -9,14 +9,16 @@ import (
 )
 
 type TrailerEntity struct {
+	*framework.GameEntity
 	*framework.Sprite
 	Trailer *models.Trailer
 }
 
 func NewTrailer(pos helper.DirectionPosition, size helper.Size, mass float64, trType models.TrailerType) *TrailerEntity {
 	t := &TrailerEntity{
-		Sprite:  framework.InitSprites(),
-		Trailer: models.NewTrailer(size, mass, trType),
+		GameEntity: framework.InitGameEntity(),
+		Sprite:     framework.InitSprites(),
+		Trailer:    models.NewTrailer(size, mass, trType),
 	}
 	t.Trailer.Position = pos
 	t.LoadResources(&loader.ResourceLoader{}, loader.TrailerFileNames[trType])
@@ -40,6 +42,7 @@ func (t *TrailerEntity) GetTransforms(scale float64) *ebiten.DrawImageOptions {
 	return op
 }
 
-func (t *TrailerEntity) Update(dt float64) {
-	//t.Trailer.Position.Angle += helper.Radian(dt)
+func (t *TrailerEntity) AddComponent(c framework.IComponent) {
+	c.SetOwner(t)
+	t.GameEntity.AddComponent(c)
 }

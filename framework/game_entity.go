@@ -1,17 +1,25 @@
 package framework
 
-type Component interface {
+type IComponent interface {
 	Start()
 	Update(dt float64)
 	Disable()
 	Enable()
 	IsEnabled() bool
+	GetOwner() Updating
+	SetOwner(g Updating)
 }
 
 type GameEntity struct {
 	Name       string
 	Enabled    bool
-	Components []Component
+	Components []IComponent
+}
+
+func InitGameEntity() *GameEntity {
+	return &GameEntity{
+		Components: make([]IComponent, 0),
+	}
 }
 
 func (g *GameEntity) Start() {
@@ -30,6 +38,6 @@ func (g *GameEntity) Update(dt float64) {
 	}
 }
 
-func (g *GameEntity) AddComponent(c Component) {
+func (g *GameEntity) AddComponent(c IComponent) {
 	g.Components = append(g.Components, c)
 }

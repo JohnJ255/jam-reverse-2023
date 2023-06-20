@@ -8,6 +8,7 @@ import (
 )
 
 type CarEntity struct {
+	*framework.GameEntity
 	*framework.Sprite
 	Car      *models.Car
 	IsPlayer bool
@@ -15,9 +16,10 @@ type CarEntity struct {
 
 func NewCar(ct framework.ControlType, car *models.Car) *CarEntity {
 	c := &CarEntity{
-		Sprite:   framework.InitSprites(),
-		Car:      car,
-		IsPlayer: ct == framework.Player,
+		GameEntity: framework.InitGameEntity(),
+		Sprite:     framework.InitSprites(),
+		Car:        car,
+		IsPlayer:   ct == framework.Player,
 	}
 	c.LoadResources(&loader.ResourceLoader{}, loader.CarFileNames[ct])
 
@@ -32,25 +34,7 @@ func (c *CarEntity) GetTransforms(scale float64) *ebiten.DrawImageOptions {
 	return op
 }
 
-func (c *CarEntity) Control() {
-	accelerate := 0.0
-	wheel := 0.0
-	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		wheel = -1
-	} else if ebiten.IsKeyPressed(ebiten.KeyRight) {
-		wheel = 1
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyUp) {
-		accelerate = 1.0
-	} else if ebiten.IsKeyPressed(ebiten.KeyDown) {
-		accelerate = -0.3
-	}
-
-	c.Car.Control(accelerate, wheel)
-}
-
-func (c *CarEntity) Update(dt float64) {
-	if c.IsPlayer {
-		c.Control()
-	}
+func (c *CarEntity) AddComponent(comp framework.IComponent) {
+	comp.SetOwner(c)
+	c.GameEntity.AddComponent(comp)
 }

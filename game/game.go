@@ -4,6 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"image/color"
+	"reverse-jam-2023/components"
 	"reverse-jam-2023/entities"
 	"reverse-jam-2023/framework"
 	"reverse-jam-2023/helper"
@@ -22,8 +23,10 @@ func NewGame() *Game {
 	car := models.NewSportCar(0)
 	car.Position.X = 200
 	car.Position.Y = 100
+	playerCar := entities.NewCar(framework.Player, car)
+	playerCar.AddComponent(components.NewPlayerCarControl())
 	return &Game{
-		player: entities.NewCar(framework.Player, car),
+		player: playerCar,
 		level:  entities.NewLevel(1),
 		WindowSize: helper.IntSize{
 			Width:  800,

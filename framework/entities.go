@@ -7,7 +7,11 @@ type Drawing interface {
 	GetTransforms(scale float64) *ebiten.DrawImageOptions
 }
 
+type Updating interface {
+	Update(dt float64)
+}
+
 type Entity interface {
 	Drawing
-	Update(dt float64)
+	Updating
 }
