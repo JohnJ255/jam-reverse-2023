@@ -20,8 +20,6 @@ func NewCar(ct framework.ControlType, car *models.Car) *CarEntity {
 		Car:          car,
 		IsPlayer:     ct == framework.Player,
 	}
-	car.Position.X = 100
-	car.Position.Y = 100
 	c.LoadResources(&loader.Resource{}, loader.CarFileNames[ct])
 
 	return c

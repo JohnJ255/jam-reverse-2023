@@ -64,7 +64,7 @@ func (b *SpriteEntity) PivotTransform(scale float64, size helper.Size, pivot hel
 	scaleY := scale * size.Width / (float64(spriteSize.X)*math.Sin(b.DrawAngle) + float64(spriteSize.Y)*math.Cos(b.DrawAngle))
 	op.GeoM.Scale(scaleX, scaleY)
 
-	tx := size.Length * (1 - pivot.U)
+	tx := -size.Length * (pivot.U - math.Abs(math.Sin(b.DrawAngle)))
 	ty := -size.Width * pivot.V
 	op.GeoM.Translate(tx, ty)
 

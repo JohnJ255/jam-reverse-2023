@@ -34,7 +34,7 @@ type Trailer struct {
 func NewTrailer(size helper.Size, mass float64, trType TrailerType) *Trailer {
 	return &Trailer{
 		Size:         size,
-		Pivot:        helper.VecUV{1, 0.5},
+		Pivot:        helper.VecUV{0.2, 0.5},
 		maxHealth:    100,
 		health:       100,
 		mass:         mass,
@@ -82,12 +82,18 @@ func (t *Trailer) AddTraktor(c TowbarInterface) {
 }
 
 func (t *Trailer) GetTowbarLocalPosition() helper.Vec2 {
-	x := t.Size.Length * t.Pivot.U * math.Cos(float64(t.Position.Angle))
-	y := t.Size.Width * t.Pivot.V * math.Sin(float64(t.Position.Angle))
+	x := t.Size.Length * (1 - t.Pivot.U) * math.Cos(float64(t.Position.Angle))
+	y := t.Size.Length * (1 - t.Pivot.U) * math.Sin(float64(t.Position.Angle))
 	return helper.Vec2{x, y}
 }
 
 func (t *Trailer) Control(velocity helper.Vec2) {
-	t.Position.X = t.Traktor.GetTowbarPosition().X - t.GetTowbarLocalPosition().X
-	t.Position.Y = t.Traktor.GetTowbarPosition().Y - t.GetTowbarLocalPosition().Y
+	if t.Traktor == nil {
+		return
+	}
+
+	tlp := t.GetTowbarLocalPosition()
+	t.Position.X = t.Traktor.GetTowbarPosition().X - tlp.X
+	t.Position.Y = t.Traktor.GetTowbarPosition().Y - tlp.Y
+	t.Position.Angle = tlp.Add(velocity).ToRadian()
 }

@@ -51,6 +51,9 @@ func (v Vec2) Length() float64 {
 }
 
 func (v Vec2) Normalize() Vec2 {
+	if v.X == 0 && v.Y == 0 {
+		return v
+	}
 	return v.Mul(1 / v.Length())
 }
 

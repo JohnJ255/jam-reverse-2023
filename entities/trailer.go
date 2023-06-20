@@ -41,5 +41,5 @@ func (t *TrailerEntity) GetTransforms(scale float64) *ebiten.DrawImageOptions {
 }
 
 func (t *TrailerEntity) Update(dt float64) {
-
+	//t.Trailer.Position.Angle += helper.Radian(dt)
 }

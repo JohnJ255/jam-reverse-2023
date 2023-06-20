@@ -20,6 +20,8 @@ type Game struct {
 
 func NewGame() *Game {
 	car := models.NewSportCar(0)
+	car.Position.X = 200
+	car.Position.Y = 100
 	return &Game{
 		player: entities.NewCar(framework.Player, car),
 		level:  entities.NewLevel(0),
@@ -56,6 +58,8 @@ func (g *Game) Start(f *framework.Framework) {
 				if p.Car.Trailer != nil {
 					pos = p.Car.Trailer.(*models.Trailer).Position.Vec2
 					vector.DrawFilledCircle(screen, float32(pos.X), float32(pos.Y), 3, color.NRGBA{160, 160, 65, 255}, false)
+					pos = pos.Add(p.Car.Trailer.(*models.Trailer).GetTowbarLocalPosition())
+					vector.DrawFilledCircle(screen, float32(pos.X), float32(pos.Y), 3, color.NRGBA{160, 0, 65, 255}, false)
 				}
 			})
 			return "towbar added"
