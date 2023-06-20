@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
 	"reverse-jam-2023/loader"
 	"strconv"
@@ -15,7 +16,7 @@ func NewLevel(index int) *Level {
 	res := &loader.ResourceLoader{}
 	return &Level{
 		name:            "level " + strconv.Itoa(index),
-		backgroundImage: res.GetSprite("background.png"),
+		backgroundImage: res.GetSprite(fmt.Sprintf("level%d.png", index)),
 	}
 }
 
