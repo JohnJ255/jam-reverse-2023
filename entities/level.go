@@ -12,7 +12,7 @@ type Level struct {
 }
 
 func NewLevel(index int) *Level {
-	res := &loader.Resource{}
+	res := &loader.ResourceLoader{}
 	return &Level{
 		name:            "level " + strconv.Itoa(index),
 		backgroundImage: res.GetSprite("background.png"),

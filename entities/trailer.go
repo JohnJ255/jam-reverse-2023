@@ -15,11 +15,11 @@ type TrailerEntity struct {
 
 func NewTrailer(pos helper.DirectionPosition, size helper.Size, mass float64, trType models.TrailerType) *TrailerEntity {
 	t := &TrailerEntity{
-		SpriteEntity: framework.InitSprites(0),
+		SpriteEntity: framework.InitSprites(),
 		Trailer:      models.NewTrailer(size, mass, trType),
 	}
 	t.Trailer.Position = pos
-	t.LoadResources(&loader.Resource{}, loader.TrailerFileNames[trType])
+	t.LoadResources(&loader.ResourceLoader{}, loader.TrailerFileNames[trType])
 
 	return t
 }

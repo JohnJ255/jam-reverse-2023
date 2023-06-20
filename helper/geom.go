@@ -26,6 +26,11 @@ type VecUV struct {
 type Degrees float64
 type Radian float64
 
+var AngleTop = Radian(math.Pi / 2)
+var AngleBottom = Radian(-math.Pi / 2)
+var AngleLeft = Radian(math.Pi)
+var AngleRight = Radian(0)
+
 func (d Degrees) ToRadians() Radian {
 	return Radian(float64(d) * math.Pi / 180)
 }

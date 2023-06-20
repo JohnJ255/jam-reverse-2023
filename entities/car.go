@@ -2,7 +2,6 @@ package entities
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"math"
 	"reverse-jam-2023/framework"
 	"reverse-jam-2023/loader"
 	"reverse-jam-2023/models"
@@ -16,11 +15,11 @@ type CarEntity struct {
 
 func NewCar(ct framework.ControlType, car *models.Car) *CarEntity {
 	c := &CarEntity{
-		SpriteEntity: framework.InitSprites(math.Pi / 2),
+		SpriteEntity: framework.InitSprites(),
 		Car:          car,
 		IsPlayer:     ct == framework.Player,
 	}
-	c.LoadResources(&loader.Resource{}, loader.CarFileNames[ct])
+	c.LoadResources(&loader.ResourceLoader{}, loader.CarFileNames[ct])
 
 	return c
 }
