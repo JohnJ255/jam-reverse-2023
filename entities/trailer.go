@@ -3,7 +3,6 @@ package entities
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"reverse-jam-2023/framework"
-	"reverse-jam-2023/helper"
 	"reverse-jam-2023/loader"
 	"reverse-jam-2023/models"
 )
@@ -14,7 +13,27 @@ type TrailerEntity struct {
 	Trailer *models.Trailer
 }
 
-func NewTrailer(pos helper.DirectionPosition, size helper.Size, mass float64, trType models.TrailerType) *TrailerEntity {
+func (t *TrailerEntity) GetSize() framework.Size {
+	return t.Trailer.Size
+}
+
+func (t *TrailerEntity) GetPosition() framework.Vec2 {
+	return t.Trailer.Position.Vec2
+}
+
+func (t *TrailerEntity) GetRotation() framework.Radian {
+	return t.Trailer.Position.Angle
+}
+
+func (t *TrailerEntity) GetScale() framework.Vec2 {
+	return framework.Vec2{1, 1}
+}
+
+func (t *TrailerEntity) GetPivot() framework.VecUV {
+	return t.Trailer.Pivot
+}
+
+func NewTrailer(pos framework.DirectionPosition, size framework.Size, mass float64, trType models.TrailerType) *TrailerEntity {
 	t := &TrailerEntity{
 		GameEntity: framework.InitGameEntity(),
 		Sprite:     framework.InitSprites(),
@@ -26,7 +45,7 @@ func NewTrailer(pos helper.DirectionPosition, size helper.Size, mass float64, tr
 	return t
 }
 
-func NewTrailerToBackOfTractor(trac models.TowbarInterface, size helper.Size, mass float64, trType models.TrailerType) *TrailerEntity {
+func NewTrailerToBackOfTractor(trac models.TowbarInterface, size framework.Size, mass float64, trType models.TrailerType) *TrailerEntity {
 	pos := trac.GetPosition()
 	pos.X = trac.GetTowbarPosition().X
 	pos.Y = trac.GetTowbarPosition().Y

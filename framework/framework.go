@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"image/color"
 	"strings"
 	"time"
 )
@@ -23,7 +24,8 @@ type Framework struct {
 	windowHeight int
 	windowTitle  string
 	ticks        uint64
-	debugDraws   map[string]func(screen *ebiten.Image)
+	Debug        *DebugTool
+	WorldStarted bool
 }
 
 var fw *Framework
@@ -38,8 +40,14 @@ func InitWindowGame(g Game, windowWidth, windowHeight int, windowTitle string) *
 		windowHeight: windowHeight,
 		windowTitle:  windowTitle,
 		console:      NewConsole(),
-		debugDraws:   make(map[string]func(screen *ebiten.Image)),
 	}
+	fw.Debug = NewDebugTool(fw, &DefaultCollisionPainter{
+		color: color.NRGBA{40, 255, 40, 255},
+	}, &DefaultIntersectionPainter{
+		color:       color.NRGBA{255, 155, 155, 255},
+		arrowColor:  color.NRGBA{255, 255, 255, 255},
+		arrowLength: 10,
+	})
 	return fw
 }
 
@@ -52,8 +60,15 @@ func (f *Framework) Update() error {
 	dt := now.Sub(f.lastUpdate).Seconds()
 	f.lastUpdate = now
 	f.ticks++
+	entities := f.entities
 	if f.ticks == 1 {
 		f.game.Start(f)
+
+		entities = f.entities
+		for _, e := range entities {
+			e.Start(f)
+		}
+		f.WorldStarted = true
 		return nil
 	}
 
@@ -67,7 +82,7 @@ func (f *Framework) Update() error {
 		return nil
 	}
 
-	for _, e := range f.entities {
+	for _, e := range entities {
 		e.Update(dt)
 	}
 
@@ -80,11 +95,11 @@ func (f *Framework) Draw(screen *ebiten.Image) {
 		screen.DrawImage(e.GetSprite(), e.GetTransforms(1))
 	}
 
+	for _, drawer := range f.Debug.Draws {
+		drawer(screen)
+	}
 	if f.console.IsOpened {
 		f.console.Draw(screen, 0, 0, f.windowWidth, f.windowHeight/3)
-	}
-	for _, drawer := range f.debugDraws {
-		drawer(screen)
 	}
 }
 
@@ -113,14 +128,6 @@ func (f *Framework) MessageToConsole(msg string) {
 	f.console.Println(msg)
 }
 
-func (f *Framework) SetDebugDraw(name string, drawer func(screen *ebiten.Image)) {
-	f.debugDraws[name] = drawer
-}
-
-func (f *Framework) RemoveDebugDraw(name string) {
-	delete(f.debugDraws, name)
-}
-
 func (f *Framework) MakeConsoleCommand(s string) {
 	f.console.Println(s)
 	params := strings.Split(s, " ")
@@ -133,4 +140,7 @@ func (f *Framework) MakeConsoleCommand(s string) {
 
 func (f *Framework) AddEntity(entity Entity) {
 	f.entities = append(f.entities, entity)
+	if f.WorldStarted {
+		entity.Start(f)
+	}
 }

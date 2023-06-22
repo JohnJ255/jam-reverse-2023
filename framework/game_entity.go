@@ -1,7 +1,8 @@
 package framework
 
 type IComponent interface {
-	Start()
+	GetName() string
+	Start(f *Framework)
 	Update(dt float64)
 	Disable()
 	Enable()
@@ -22,10 +23,10 @@ func InitGameEntity() *GameEntity {
 	}
 }
 
-func (g *GameEntity) Start() {
+func (g *GameEntity) Start(f *Framework) {
 	for _, c := range g.Components {
 		if c.IsEnabled() {
-			c.Start()
+			c.Start(f)
 		}
 	}
 }
@@ -40,4 +41,17 @@ func (g *GameEntity) Update(dt float64) {
 
 func (g *GameEntity) AddComponent(c IComponent) {
 	g.Components = append(g.Components, c)
+}
+
+func (g *GameEntity) GetComponents() []IComponent {
+	return g.Components
+}
+
+func (g *GameEntity) GetComponent(name string) IComponent {
+	for _, c := range g.Components {
+		if c.GetName() == name {
+			return c
+		}
+	}
+	return nil
 }

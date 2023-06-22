@@ -3,7 +3,6 @@ package framework
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"math"
-	"reverse-jam-2023/helper"
 )
 
 type ResourceLoader interface {
@@ -12,13 +11,13 @@ type ResourceLoader interface {
 
 type ImageResource interface {
 	GetFileNames() []string
-	GetBaseAngle() helper.Radian
+	GetBaseAngle() Radian
 }
 
 type Sprite struct {
 	Visible         bool
 	Imgs            []*ebiten.Image
-	DrawAngle       helper.Radian
+	DrawAngle       Radian
 	GetSpriteFunc   func() *ebiten.Image
 	CurrentImgIndex int
 }
@@ -48,18 +47,18 @@ func (b *Sprite) getBaseSprite() *ebiten.Image {
 	return b.Imgs[b.CurrentImgIndex]
 }
 
-func (b *Sprite) PivotTransform(scale float64, size helper.Size, pivot helper.VecUV) *ebiten.DrawImageOptions {
+func (b *Sprite) PivotTransform(scale float64, size Size, pivot VecUV) *ebiten.DrawImageOptions {
 	op := &ebiten.DrawImageOptions{}
 
 	op.GeoM.Rotate(float64(b.DrawAngle))
 
 	spriteSize := b.GetSprite().Bounds().Size()
 	scaleX := scale * size.Length / (float64(spriteSize.X)*math.Cos(float64(b.DrawAngle)) + float64(spriteSize.Y)*math.Sin(float64(b.DrawAngle)))
-	scaleY := scale * size.Width / (float64(spriteSize.X)*math.Sin(float64(b.DrawAngle)) + float64(spriteSize.Y)*math.Cos(float64(b.DrawAngle)))
+	scaleY := scale * size.Height / (float64(spriteSize.X)*math.Sin(float64(b.DrawAngle)) + float64(spriteSize.Y)*math.Cos(float64(b.DrawAngle)))
 	op.GeoM.Scale(scaleX, scaleY)
 
 	tx := -size.Length * (pivot.U - math.Abs(math.Sin(float64(b.DrawAngle))))
-	ty := -size.Width * pivot.V
+	ty := -size.Height * pivot.V
 	op.GeoM.Translate(tx, ty)
 
 	return op

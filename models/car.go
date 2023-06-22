@@ -13,47 +13,47 @@ type TrailerJoin interface {
 	getSelfMass() float64
 	getFullMass() float64
 	getFrictionForce() float64
-	GetPivot() helper.VecUV
+	GetPivot() framework.VecUV
 	AddTraktor(towbar TowbarInterface)
-	Control(velocity helper.Vec2)
+	Control(velocity framework.Vec2)
 }
 
 type Car struct {
 	Trailer       TrailerJoin
-	Position      helper.DirectionPosition
-	Size          helper.Size
+	Position      framework.DirectionPosition
+	Size          framework.Size
 	WheelBase     float64
-	Pivot         helper.VecUV
+	Pivot         framework.VecUV
 	speed         float64
 	powerful      float64
 	minSpeed      float64
 	maxSpeed      float64
 	handling      float64 // управляемость
 	speedHandling float64 // доля снижаемости управляемости на скорости
-	wheelAngle    helper.Radian
-	maxWheelAngle helper.Radian
+	wheelAngle    framework.Radian
+	maxWheelAngle framework.Radian
 	health        int
 	maxHealth     int
 	baseInertion  float64
 	mass          float64
 }
 
-func NewSportCar(angle helper.Degrees) *Car {
+func NewSportCar(angle framework.Degrees) *Car {
 	return &Car{
-		Position: helper.DirectionPosition{
+		Position: framework.DirectionPosition{
 			Angle: angle.ToRadians(),
 		},
-		Size: helper.Size{
-			Width:  56,
+		Size: framework.Size{
+			Height: 56,
 			Length: 114,
 		},
-		Pivot:         helper.VecUV{0.2, 0.5},
+		Pivot:         framework.VecUV{0.2, 0.5},
 		powerful:      160,
 		minSpeed:      helper.KmphToPixelsPerTick(-54),
 		maxSpeed:      helper.KmphToPixelsPerTick(180),
 		handling:      0.02,
 		speedHandling: 0.7,
-		maxWheelAngle: helper.Degrees(45).ToRadians(),
+		maxWheelAngle: framework.Degrees(45).ToRadians(),
 		health:        100,
 		maxHealth:     100,
 		WheelBase:     80,
@@ -74,20 +74,20 @@ func (c *Car) Control(accelerate float64, wheelRotation float64) {
 			c.speed = 0
 		}
 	} else {
-		c.speed = helper.Limited(c.speed+accelerate*powerful, minSpeed, maxSpeed)
+		c.speed = framework.Limited(c.speed+accelerate*powerful, minSpeed, maxSpeed)
 	}
-	maxWheelAngle := helper.Radian(float64(c.maxWheelAngle) * (maxSpeed - math.Abs(c.speed)*c.speedHandling) / maxSpeed)
-	newWheelAngle := helper.Radian(helper.Stepped(float64(c.wheelAngle), wheelRotation*float64(maxWheelAngle), c.handling))
-	c.wheelAngle = helper.Limited(newWheelAngle, -maxWheelAngle, maxWheelAngle)
+	maxWheelAngle := framework.Radian(float64(c.maxWheelAngle) * (maxSpeed - math.Abs(c.speed)*c.speedHandling) / maxSpeed)
+	newWheelAngle := framework.Radian(framework.Stepped(float64(c.wheelAngle), wheelRotation*float64(maxWheelAngle), c.handling))
+	c.wheelAngle = framework.Limited(newWheelAngle, -maxWheelAngle, maxWheelAngle)
 
-	c.Position.Angle += helper.Radian(math.Atan2(c.WheelBase*math.Tan(float64(c.wheelAngle)), c.Size.Length+c.WheelBase) * c.speed * 0.03)
+	c.Position.Angle += framework.Radian(math.Atan2(c.WheelBase*math.Tan(float64(c.wheelAngle)), c.Size.Length+c.WheelBase) * c.speed * 0.03)
 	dx := c.speed * math.Cos(float64(c.Position.Angle))
 	dy := c.speed * math.Sin(float64(c.Position.Angle))
 	c.Position.X += dx
 	c.Position.Y += dy
 
 	if c.Trailer != nil {
-		c.Trailer.Control(helper.Vec2{dx, dy})
+		c.Trailer.Control(framework.Vec2{dx, dy})
 	}
 
 	framework.DebugWatchAdd("Speed", func() string {
@@ -131,19 +131,19 @@ func (c *Car) calcInertionDependsMass() float64 {
 		mass += c.Trailer.getSelfMass()
 	}
 	k := 1 + (massEtalon-mass)/massEtalon
-	return helper.Limited(c.baseInertion-k/10, 0.9, 0.999)
+	return framework.Limited(c.baseInertion-k/10, 0.9, 0.999)
 }
 
-func (c *Car) GetPivot() helper.VecUV {
+func (c *Car) GetPivot() framework.VecUV {
 	return c.Pivot
 }
 
-func (c *Car) GetPosition() helper.DirectionPosition {
+func (c *Car) GetPosition() framework.DirectionPosition {
 	return c.Position
 }
 
-func (c *Car) GetTowbarPosition() helper.Vec2 {
+func (c *Car) GetTowbarPosition() framework.Vec2 {
 	x := c.Position.X - c.Size.Length*c.Pivot.U*math.Cos(float64(c.Position.Angle))
-	y := c.Position.Y - c.Size.Width*c.Pivot.V*math.Sin(float64(c.Position.Angle))*0.8
-	return helper.Vec2{x, y}
+	y := c.Position.Y - c.Size.Height*c.Pivot.V*math.Sin(float64(c.Position.Angle))*0.8
+	return framework.Vec2{x, y}
 }

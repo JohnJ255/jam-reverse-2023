@@ -14,6 +14,26 @@ type CarEntity struct {
 	IsPlayer bool
 }
 
+func (c *CarEntity) GetPivot() framework.VecUV {
+	return c.Car.Pivot
+}
+
+func (c *CarEntity) GetSize() framework.Size {
+	return c.Car.Size
+}
+
+func (c *CarEntity) GetPosition() framework.Vec2 {
+	return c.Car.Position.Vec2
+}
+
+func (c *CarEntity) GetRotation() framework.Radian {
+	return c.Car.Position.Angle
+}
+
+func (c *CarEntity) GetScale() framework.Vec2 {
+	return framework.Vec2{1, 1}
+}
+
 func NewCar(ct framework.ControlType, car *models.Car) *CarEntity {
 	c := &CarEntity{
 		GameEntity: framework.InitGameEntity(),

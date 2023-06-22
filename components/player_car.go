@@ -10,13 +10,17 @@ type PlayerCarControl struct {
 	*framework.Component
 }
 
+func (c *PlayerCarControl) GetName() string {
+	return "PlayerCarControl"
+}
+
 func NewPlayerCarControl() *PlayerCarControl {
 	return &PlayerCarControl{
 		Component: framework.InitComponent(),
 	}
 }
 
-func (c *PlayerCarControl) Start() {
+func (c *PlayerCarControl) Start(f *framework.Framework) {
 }
 
 func (c *PlayerCarControl) Update(dt float64) {

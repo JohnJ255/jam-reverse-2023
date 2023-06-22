@@ -2,12 +2,12 @@ package models
 
 import (
 	"math"
-	"reverse-jam-2023/helper"
+	"reverse-jam-2023/framework"
 )
 
 type TowbarInterface interface {
-	GetPosition() helper.DirectionPosition
-	GetTowbarPosition() helper.Vec2
+	GetPosition() framework.DirectionPosition
+	GetTowbarPosition() framework.Vec2
 }
 
 type TrailerType int
@@ -21,9 +21,9 @@ const (
 type Trailer struct {
 	Trailer      TrailerJoin
 	Traktor      TowbarInterface
-	Position     helper.DirectionPosition
-	Size         helper.Size
-	Pivot        helper.VecUV
+	Position     framework.DirectionPosition
+	Size         framework.Size
+	Pivot        framework.VecUV
 	trType       TrailerType
 	health       int
 	maxHealth    int
@@ -31,10 +31,10 @@ type Trailer struct {
 	mass         float64
 }
 
-func NewTrailer(size helper.Size, mass float64, trType TrailerType) *Trailer {
+func NewTrailer(size framework.Size, mass float64, trType TrailerType) *Trailer {
 	return &Trailer{
 		Size:         size,
-		Pivot:        helper.VecUV{0.2, 0.5},
+		Pivot:        framework.VecUV{0.2, 0.5},
 		maxHealth:    100,
 		health:       100,
 		mass:         mass,
@@ -43,7 +43,7 @@ func NewTrailer(size helper.Size, mass float64, trType TrailerType) *Trailer {
 	}
 }
 
-func NewTrailerToBackOfTractor(trac TowbarInterface, size helper.Size, mass float64, trType TrailerType) *Trailer {
+func NewTrailerToBackOfTractor(trac TowbarInterface, size framework.Size, mass float64, trType TrailerType) *Trailer {
 	pos := trac.GetPosition()
 	pos.X = trac.GetTowbarPosition().X
 	pos.Y = trac.GetTowbarPosition().Y
@@ -68,26 +68,26 @@ func (t *Trailer) getFrictionForce() float64 {
 	return 1 - t.calcInertionDependsMass()
 }
 
-func (t *Trailer) GetPivot() helper.VecUV {
+func (t *Trailer) GetPivot() framework.VecUV {
 	return t.Pivot
 }
 
 func (t *Trailer) calcInertionDependsMass() float64 {
 	k := 1 + (massEtalon-t.mass)/massEtalon
-	return helper.Limited(t.baseInertion-k/10, 0.9, 0.999)
+	return framework.Limited(t.baseInertion-k/10, 0.9, 0.999)
 }
 
 func (t *Trailer) AddTraktor(c TowbarInterface) {
 	t.Traktor = c
 }
 
-func (t *Trailer) GetTowbarLocalPosition() helper.Vec2 {
+func (t *Trailer) GetTowbarLocalPosition() framework.Vec2 {
 	x := t.Size.Length * (1 - t.Pivot.U) * math.Cos(float64(t.Position.Angle))
 	y := t.Size.Length * (1 - t.Pivot.U) * math.Sin(float64(t.Position.Angle))
-	return helper.Vec2{x, y}
+	return framework.Vec2{x, y}
 }
 
-func (t *Trailer) Control(velocity helper.Vec2) {
+func (t *Trailer) Control(velocity framework.Vec2) {
 	if t.Traktor == nil {
 		return
 	}

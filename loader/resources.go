@@ -2,13 +2,12 @@ package loader
 
 import (
 	"reverse-jam-2023/framework"
-	"reverse-jam-2023/helper"
 	"reverse-jam-2023/models"
 )
 
 var CarFileNames = map[framework.ControlType]*ImageResource{
 	framework.Player: {
-		Rotation: helper.AngleTop,
+		Rotation: framework.AngleTop,
 		Filenames: []string{
 			"Car_1_01.png",
 			"Car_1_02.png",
@@ -18,7 +17,7 @@ var CarFileNames = map[framework.ControlType]*ImageResource{
 		},
 	},
 	framework.Computer: {
-		Rotation: helper.AngleTop,
+		Rotation: framework.AngleTop,
 		Filenames: []string{
 			"Car_3_01.png",
 			"Car_3_02.png",
@@ -31,13 +30,13 @@ var CarFileNames = map[framework.ControlType]*ImageResource{
 
 var TrailerFileNames = map[models.TrailerType]*ImageResource{
 	models.TrailerTypeCart: {
-		Rotation: helper.AngleRight,
+		Rotation: framework.AngleRight,
 		Filenames: []string{
 			"Trailer_1_01.png",
 		},
 	},
 	models.TrailerTypeTrailer: {
-		Rotation: helper.AngleRight,
+		Rotation: framework.AngleRight,
 		Filenames: []string{
 			"Trailer_2_01.png",
 		},
