@@ -81,6 +81,7 @@ func (g *Game) Start(f *framework.Framework) {
 	f.SetConsoleCommand("show_collisions", func(params ...string) string {
 		if params[0] == "1" {
 			f.Debug.SetDebugDraw("collisions", f.Debug.DefaultDrawCollisions)
+
 			return "collisions debug drawing enable"
 		}
 		f.Debug.RemoveDebugDraw("collisions")

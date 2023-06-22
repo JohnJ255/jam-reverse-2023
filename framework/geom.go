@@ -63,28 +63,24 @@ func (r Radian) ToVec() Vec2 {
 	return Vec2{math.Cos(float64(r)), math.Sin(float64(r))}
 }
 
-func (r Radian) ToDegress() Degrees {
+func (r Radian) ToDegrees() Degrees {
 	return Degrees(float64(r) * 180 / math.Pi)
 }
 
 func (r Radian) LefterThan(r2 Radian) bool {
+	_ = r.ToDegrees()
+	_ = r2.ToDegrees()
 	if r == r2 {
 		return false
 	}
-	//fc := Radian(2 * math.Pi)
-	//for r < 0 {
-	//	r += fc
-	//}
-	//for r2 < 0 {
-	//	r2 += fc
-	//}
-	//for r >= fc {
-	//	r -= fc
-	//}
-	//for r2 >= fc {
-	//	r2 -= fc
-	//}
-	return math.Abs(float64(r2-r)) < math.Pi
+	r = r.Normalize()
+	r2 = r2.Normalize()
+	if math.Abs(float64(r-r2)) < 0.00001 {
+		return false
+	}
+	a := float64((r2 - r).Normalize())
+	b := float64(((r + 2*math.Pi) - r2).Normalize())
+	return math.Abs(a) > math.Abs(b)
 }
 
 func (r Radian) RighterThan(r2 Radian) bool {
@@ -105,6 +101,16 @@ func (r Radian) RighterThan(r2 Radian) bool {
 	//	r2 -= fc
 	//}
 	return r2-r > math.Pi || r2-r < 0
+}
+
+func (r Radian) Normalize() Radian {
+	for r < 0 {
+		r += 2 * math.Pi
+	}
+	for r >= 2*math.Pi {
+		r -= 2 * math.Pi
+	}
+	return r
 }
 
 func (v Vec2) Add(other Vec2) Vec2 {

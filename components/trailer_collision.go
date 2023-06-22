@@ -1,7 +1,6 @@
 package components
 
 import (
-	"fmt"
 	"reverse-jam-2023/entities"
 	"reverse-jam-2023/framework"
 )
@@ -40,23 +39,14 @@ func (c *TrailerCollision) Start(f *framework.Framework) {
 	c.f = f
 }
 
-var a = 0
-
 func (c *TrailerCollision) Update(dt float64) {
 	cs := c.Collision.Intersect(c.carCollision.Collision)
 	c.f.Debug.SetDebugDraw("TrailerCollision", c.f.Debug.DefaultDrawIntersections(cs))
 	if len(cs) > 0 && cs[0].MoveOut != nil {
 		trailer := c.GetOwner().(*entities.TrailerEntity)
-		sign := framework.Radian(-0.1)
+		sign := framework.Radian(0.1)
 		if cs[0].MoveOut.ToRadian().LefterThan(trailer.Trailer.Position.Angle) {
-			sign = 0.1
-		}
-		//if trailer.Trailer.Position.Angle < 2*math.Pi {
-		//	sign = -sign
-		//}
-		//a++
-		if a < 20 {
-			fmt.Printf("tr: %f, mo: %f, car: %f, lt:%f\n", trailer.Trailer.Position.Angle.ToDegress(), cs[0].MoveOut.ToRadian().ToDegress(), trailer.Trailer.Traktor.GetPosition().Angle.ToDegress(), sign)
+			sign = -0.1
 		}
 		trailer.Trailer.Position.Angle += sign
 	}
