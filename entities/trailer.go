@@ -27,9 +27,9 @@ func NewTrailer(pos framework.DirectionPosition, size framework.Size, mass float
 
 func NewTrailerToBackOfTractor(trac models.TowbarInterface, size framework.Size, mass float64, trType models.TrailerType) *TrailerEntity {
 	pos := trac.GetPosition()
-	pos.X = trac.GetTowbarPosition().X
-	pos.Y = trac.GetTowbarPosition().Y
 	t := NewTrailer(pos, size, mass, trType)
+	t.Trailer.Position.X = trac.GetTowbarPosition().X - t.Trailer.GetTowbarLocalPosition().X
+	t.Trailer.Position.Y = trac.GetTowbarPosition().Y - t.Trailer.GetTowbarLocalPosition().Y
 	return t
 }
 

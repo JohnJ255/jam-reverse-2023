@@ -43,15 +43,6 @@ func NewTrailer(size framework.Size, mass float64, trType TrailerType) *Trailer 
 	}
 }
 
-func NewTrailerToBackOfTractor(trac TowbarInterface, size framework.Size, mass float64, trType TrailerType) *Trailer {
-	pos := trac.GetPosition()
-	pos.X = trac.GetTowbarPosition().X
-	pos.Y = trac.GetTowbarPosition().Y
-	t := NewTrailer(size, mass, trType)
-	t.Position = pos
-	return t
-}
-
 func (t *Trailer) getSelfMass() float64 {
 	return t.mass
 }

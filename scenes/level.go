@@ -44,9 +44,22 @@ func (l *Level) Init(index int, f *framework.Framework) {
 		playerCar.AddComponent(components.NewPlayerCarControl())
 		playerCar.AddComponent(components.NewCarCollision(playerCar))
 
-		trailer1 := entities.NewTrailer(framework.NewDPos(300, 100, framework.Degrees(45).ToRadians()), playerCar.Car.Size, 400, models.TrailerType(1))
+		trailer1 := entities.NewTrailer(framework.NewDPos(300, 100, framework.Degrees(45).ToRadians()), car.Size, 400, models.TrailerType(1))
 		trailer1.AddComponent(components.NewTrailerCollision(trailer1))
 		f.AddEntity(trailer1)
+	}
+
+	if index == 2 {
+		car.Position.X = 200
+		car.Position.Y = 300
+		car.Position.Angle = framework.Degrees(25).ToRadians()
+		playerCar.AddComponent(components.NewPlayerCarControl())
+		playerCar.AddComponent(components.NewCarCollision(playerCar))
+
+		trailer1 := entities.NewTrailerToBackOfTractor(car, car.Size, 400, models.TrailerType(1))
+		trailer1.AddComponent(components.NewTrailerCollision(trailer1))
+		f.AddEntity(trailer1)
+		car.AddTrailer(trailer1.Trailer)
 	}
 }
 
