@@ -39,7 +39,7 @@ func (c *TrailerCollision) Start(f *framework.Framework) {
 	c.f = f
 }
 
-func (c *TrailerCollision) Update(dt float64) {
+func (c *TrailerCollision) Update(_ float64) {
 	cs := c.Collision.Intersect(c.carCollision.Collision)
 	c.f.Debug.SetDebugDraw("TrailerCollision", c.f.Debug.DefaultDrawIntersections(cs))
 	if len(cs) > 0 && cs[0].MoveOut != nil {
@@ -52,5 +52,6 @@ func (c *TrailerCollision) Update(dt float64) {
 			}
 			trailer.Trailer.Position.Angle += sign
 		}
+
 	}
 }

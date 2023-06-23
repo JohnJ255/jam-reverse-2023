@@ -136,14 +136,19 @@ func (p *CollisionShapePolygon) CalcMoveOut(set ContactSet, other ICollisionFigu
 		return &res
 
 	case *CollisionShapePolygon:
-		return p.crossPolySAT(otherP, p.axesSAT())
+		v1 := p.crossPolySAT(otherP, p.axesSAT())
+		v2 := p.crossPolySAT(otherP, otherP.axesSAT())
+		if v1.Length() < v2.Length() {
+			return v1
+		}
+		return v2
 	}
 
 	return nil
 }
 
 func (p *CollisionShapePolygon) axesSAT() []Vec2 {
-	lines := p.GetRealLines()
+	lines := p.getLines(p.points)
 	axes := make([]Vec2, 0, len(lines))
 	for _, line := range lines {
 		axes = append(axes, line.Normal())
@@ -188,9 +193,8 @@ func (p *CollisionShapePolygon) GetOwner() ICollisionOwner {
 	return p.owner
 }
 
-func (p *CollisionShapePolygon) GetRealLines() []*PolygonLine {
+func (p *CollisionShapePolygon) getLines(points []Vec2) []*PolygonLine {
 	lines := make([]*PolygonLine, 0)
-	points := p.getRealPoints()
 	for i := 0; i < len(points); i++ {
 		next := i + 1
 		if i == len(points)-1 {
@@ -200,4 +204,8 @@ func (p *CollisionShapePolygon) GetRealLines() []*PolygonLine {
 	}
 
 	return lines
+}
+
+func (p *CollisionShapePolygon) GetRealLines() []*PolygonLine {
+	return p.getLines(p.getRealPoints())
 }
