@@ -14,6 +14,18 @@ type CarEntity struct {
 	IsPlayer bool
 }
 
+func NewCar(ct framework.ControlType, car *models.Car) *CarEntity {
+	c := &CarEntity{
+		GameEntity: framework.InitGameEntity(),
+		Sprite:     framework.InitSprites(),
+		Car:        car,
+		IsPlayer:   ct == framework.Player,
+	}
+	c.LoadResources(&loader.ResourceLoader{}, loader.CarFileNames[ct])
+
+	return c
+}
+
 func (c *CarEntity) GetPivot() framework.VecUV {
 	return c.Car.Pivot
 }
@@ -32,18 +44,6 @@ func (c *CarEntity) GetRotation() framework.Radian {
 
 func (c *CarEntity) GetScale() framework.Vec2 {
 	return framework.Vec2{1, 1}
-}
-
-func NewCar(ct framework.ControlType, car *models.Car) *CarEntity {
-	c := &CarEntity{
-		GameEntity: framework.InitGameEntity(),
-		Sprite:     framework.InitSprites(),
-		Car:        car,
-		IsPlayer:   ct == framework.Player,
-	}
-	c.LoadResources(&loader.ResourceLoader{}, loader.CarFileNames[ct])
-
-	return c
 }
 
 func (c *CarEntity) GetTransforms(scale float64) *ebiten.DrawImageOptions {

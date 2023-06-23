@@ -44,10 +44,13 @@ func (c *TrailerCollision) Update(dt float64) {
 	c.f.Debug.SetDebugDraw("TrailerCollision", c.f.Debug.DefaultDrawIntersections(cs))
 	if len(cs) > 0 && cs[0].MoveOut != nil {
 		trailer := c.GetOwner().(*entities.TrailerEntity)
-		sign := framework.Radian(0.1)
-		if cs[0].MoveOut.ToRadian().LefterThan(trailer.Trailer.Position.Angle) {
-			sign = -0.1
+		traktor := c.carCollision.GetOwner().(*entities.CarEntity)
+		if trailer.Trailer.Traktor != nil && trailer.Trailer.Traktor == traktor.Car {
+			sign := framework.Radian(0.1)
+			if cs[0].MoveOut.ToRadian().LefterThan(trailer.Trailer.Position.Angle) {
+				sign = -0.1
+			}
+			trailer.Trailer.Position.Angle += sign
 		}
-		trailer.Trailer.Position.Angle += sign
 	}
 }

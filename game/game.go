@@ -22,6 +22,7 @@ func NewGame() *Game {
 	car := models.NewSportCar(0)
 	car.Position.X = 300
 	car.Position.Y = 100
+	car.Position.Angle = framework.Degrees(45).ToRadians()
 	playerCar := entities.NewCar(framework.Player, car)
 	playerCar.AddComponent(components.NewPlayerCarControl())
 	playerCar.AddComponent(components.NewCarCollision(playerCar))

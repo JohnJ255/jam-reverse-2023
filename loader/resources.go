@@ -42,3 +42,18 @@ var TrailerFileNames = map[models.TrailerType]*ImageResource{
 		},
 	},
 }
+
+var LevelFileNames = map[int]*ImageResource{
+	0: {
+		Rotation: framework.AngleRight,
+		Filenames: []string{
+			"Level0.png",
+		},
+	},
+	1: {
+		Rotation: framework.AngleRight,
+		Filenames: []string{
+			"Level1.png",
+		},
+	},
+}

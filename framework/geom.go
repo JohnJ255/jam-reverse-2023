@@ -3,7 +3,7 @@ package framework
 import "math"
 
 type Size struct {
-	Height, Length float64
+	Length, Height float64
 }
 
 func (s Size) AsVec2() Vec2 {

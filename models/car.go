@@ -14,7 +14,8 @@ type TrailerJoin interface {
 	getFullMass() float64
 	getFrictionForce() float64
 	GetPivot() framework.VecUV
-	AddTraktor(towbar TowbarInterface)
+	ConnectTraktor(towbar TowbarInterface)
+	DisconnectTraktor()
 	Control(velocity framework.Vec2)
 }
 
@@ -122,7 +123,7 @@ func (c *Car) getFrictionForce() float64 {
 
 func (c *Car) AddTrailer(cargo TrailerJoin) {
 	c.Trailer = cargo
-	cargo.AddTraktor(c)
+	cargo.ConnectTraktor(c)
 }
 
 func (c *Car) calcInertionDependsMass() float64 {
@@ -146,4 +147,13 @@ func (c *Car) GetTowbarPosition() framework.Vec2 {
 	x := c.Position.X - c.Size.Length*c.Pivot.U*math.Cos(float64(c.Position.Angle))
 	y := c.Position.Y - c.Size.Height*c.Pivot.V*math.Sin(float64(c.Position.Angle))*0.8
 	return framework.Vec2{x, y}
+}
+
+func (c *Car) TowbarToggle() {
+	if c.Trailer != nil {
+		c.Trailer.DisconnectTraktor()
+	} else {
+		c.Trailer.ConnectTraktor(c)
+	}
+
 }

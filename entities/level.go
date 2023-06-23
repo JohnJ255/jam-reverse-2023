@@ -1,29 +1,28 @@
 package entities
 
 import (
-	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
+	"reverse-jam-2023/framework"
 	"reverse-jam-2023/loader"
 	"strconv"
 )
 
 type Level struct {
-	name            string
-	backgroundImage *ebiten.Image
+	*framework.Sprite
+	name string
+	size framework.Size
 }
 
 func NewLevel(index int) *Level {
-	res := &loader.ResourceLoader{}
-	return &Level{
-		name:            "level " + strconv.Itoa(index),
-		backgroundImage: res.GetSprite(fmt.Sprintf("level%d.png", index)),
+	level := &Level{
+		Sprite: framework.InitSprites(),
+		name:   "level " + strconv.Itoa(index),
+		size:   framework.Size{1200, 600},
 	}
-}
-
-func (l *Level) GetSprite() *ebiten.Image {
-	return l.backgroundImage
+	level.LoadResources(&loader.ResourceLoader{}, loader.LevelFileNames[index])
+	return level
 }
 
 func (l *Level) GetTransforms(scale float64) *ebiten.DrawImageOptions {
-	return &ebiten.DrawImageOptions{}
+	return l.PivotTransform(scale, l.size, framework.VecUV{})
 }
