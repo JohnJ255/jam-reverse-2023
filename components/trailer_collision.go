@@ -39,6 +39,7 @@ func (c *TrailerCollision) SetOwner(obj framework.Updating) {
 
 func (c *TrailerCollision) Start(f *framework.Framework) {
 	c.f = f
+	f.RegisterCollision(c.Collision, c.GetOwner().(*entities.TrailerEntity))
 }
 
 func (c *TrailerCollision) Update(_ float64) {

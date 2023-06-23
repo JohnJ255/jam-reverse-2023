@@ -54,11 +54,6 @@ func (c *CarEntity) GetTransforms(scale float64) *ebiten.DrawImageOptions {
 	return op
 }
 
-func (c *CarEntity) AddComponent(comp framework.IComponent) {
-	comp.SetOwner(c)
-	c.GameEntity.AddComponent(comp)
-}
-
 func (c *CarEntity) GetName() string {
 	return "car"
 }

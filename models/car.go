@@ -121,7 +121,7 @@ func (c *Car) getFrictionForce() float64 {
 	return 1 - c.calcInertionDependsMass()
 }
 
-func (c *Car) AddTrailer(cargo TrailerJoin) {
+func (c *Car) ConnectTrailer(cargo TrailerJoin) {
 	c.Trailer = cargo
 	cargo.ConnectTraktor(c)
 }

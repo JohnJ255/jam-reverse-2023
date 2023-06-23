@@ -156,3 +156,11 @@ func (f *Framework) GetClosestCollisonsFor(collision *Collision) []*Collision {
 	}
 	return res
 }
+
+func (f *Framework) RegisterCollision(collision *Collision, owner ICollisionOwner) {
+	if owner == nil {
+		return
+	}
+	collision.SetEntity(owner)
+	f.collisions = append(f.collisions, collision)
+}

@@ -31,7 +31,7 @@ func NewGame() *Game {
 
 func (g *Game) Start(f *framework.Framework) {
 	f.DebugModeEnable()
-	g.level.Init(2, f)
+	g.level.Init(1, f)
 
 	f.SetConsoleCommand("trailer", func(params ...string) string {
 		p := g.level.GetPlayer()
@@ -43,7 +43,7 @@ func (g *Game) Start(f *framework.Framework) {
 		car := p.GetModel().(*models.Car)
 		if trType == 1 {
 			trailer = entities.NewTrailerToBackOfTractor(car, car.Size, 400, models.TrailerType(trType))
-			car.AddTrailer(trailer.Trailer)
+			car.ConnectTrailer(trailer.Trailer)
 		} else {
 			trailer = entities.NewTrailer(framework.NewDPos(200, 200, 0), car.Size, 400, models.TrailerType(trType))
 		}

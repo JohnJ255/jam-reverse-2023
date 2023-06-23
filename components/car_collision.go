@@ -1,6 +1,7 @@
 package components
 
 import (
+	"reverse-jam-2023/entities"
 	"reverse-jam-2023/framework"
 )
 
@@ -21,6 +22,7 @@ func (c *CarCollision) GetName() string {
 }
 
 func (c *CarCollision) Start(f *framework.Framework) {
+	f.RegisterCollision(c.Collision, c.GetOwner().(*entities.CarEntity))
 }
 
 func (c *CarCollision) Update(dt float64) {
