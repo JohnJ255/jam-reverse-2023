@@ -148,7 +148,7 @@ func (p *CollisionShapePolygon) CalcMoveOut(set ContactSet, other ICollisionFigu
 }
 
 func (p *CollisionShapePolygon) axesSAT() []Vec2 {
-	lines := p.getLines(p.points)
+	lines := p.GetRealLines()
 	axes := make([]Vec2, 0, len(lines))
 	for _, line := range lines {
 		axes = append(axes, line.Normal())
