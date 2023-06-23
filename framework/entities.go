@@ -20,4 +20,6 @@ type Entity interface {
 	Drawing
 	Updating
 	IContainer
+	GetName() string
+	GetModel() Model
 }

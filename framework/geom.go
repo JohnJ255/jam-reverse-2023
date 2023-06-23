@@ -51,8 +51,8 @@ func NewVec2(x, y float64) Vec2 {
 	return Vec2{X: x, Y: y}
 }
 
-func NewDPos(x, y, a float64) DirectionPosition {
-	return DirectionPosition{Vec2{X: x, Y: y}, Radian(a)}
+func NewDPos(x, y float64, a Radian) DirectionPosition {
+	return DirectionPosition{Vec2{X: x, Y: y}, a}
 }
 
 func (d Degrees) ToRadians() Radian {

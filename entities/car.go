@@ -16,11 +16,11 @@ type CarEntity struct {
 
 func NewCar(ct framework.ControlType, car *models.Car) *CarEntity {
 	c := &CarEntity{
-		GameEntity: framework.InitGameEntity(),
-		Sprite:     framework.InitSprites(),
-		Car:        car,
-		IsPlayer:   ct == framework.Player,
+		Sprite:   framework.InitSprites(),
+		Car:      car,
+		IsPlayer: ct == framework.Player,
 	}
+	c.GameEntity = framework.InitGameEntity(c)
 	c.LoadResources(&loader.ResourceLoader{}, loader.CarFileNames[ct])
 
 	return c
@@ -57,4 +57,12 @@ func (c *CarEntity) GetTransforms(scale float64) *ebiten.DrawImageOptions {
 func (c *CarEntity) AddComponent(comp framework.IComponent) {
 	comp.SetOwner(c)
 	c.GameEntity.AddComponent(comp)
+}
+
+func (c *CarEntity) GetName() string {
+	return "car"
+}
+
+func (c *CarEntity) GetModel() framework.Model {
+	return c.Car
 }

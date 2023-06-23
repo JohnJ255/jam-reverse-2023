@@ -24,6 +24,7 @@ func (c *PlayerCarControl) Start(f *framework.Framework) {
 }
 
 func (c *PlayerCarControl) Update(dt float64) {
+	entity := c.GetOwner().(*entities.CarEntity)
 	accelerate := 0.0
 	wheel := 0.0
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
@@ -36,6 +37,9 @@ func (c *PlayerCarControl) Update(dt float64) {
 	} else if ebiten.IsKeyPressed(ebiten.KeyDown) {
 		accelerate = -0.3
 	}
+	if ebiten.IsKeyPressed(ebiten.KeyR) {
+		entity.Car.TowbarToggle()
+	}
 
-	c.GetOwner().(*entities.CarEntity).Car.Control(accelerate, wheel)
+	entity.Car.Control(accelerate, wheel)
 }

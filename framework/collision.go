@@ -20,6 +20,11 @@ type ICollisionSizableOwner interface {
 	ICollisionOwner
 }
 
+type ICollisionComponentOwner interface {
+	ICollisionSizableOwner
+	Updating
+}
+
 type ICollisionFigure interface {
 	Intersect(other ICollisionFigure) ContactSet
 	Bounds() Bounds
@@ -31,12 +36,21 @@ type ICollisionFigure interface {
 
 type Collision struct {
 	Figures []ICollisionFigure
+	entity  ICollisionOwner
 }
 
 func InitCollision(figure ICollisionFigure) *Collision {
 	return &Collision{
 		Figures: []ICollisionFigure{figure},
 	}
+}
+
+func (c *Collision) GetEntity() ICollisionOwner {
+	return c.entity
+}
+
+func (c *Collision) SetEntity(entity ICollisionOwner) {
+	c.entity = entity
 }
 
 func NewPolygonCollision(points []Vec2, owner ICollisionOwner) ICollisionFigure {

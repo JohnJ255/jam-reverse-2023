@@ -13,32 +13,12 @@ type TrailerEntity struct {
 	Trailer *models.Trailer
 }
 
-func (t *TrailerEntity) GetSize() framework.Size {
-	return t.Trailer.Size
-}
-
-func (t *TrailerEntity) GetPosition() framework.Vec2 {
-	return t.Trailer.Position.Vec2
-}
-
-func (t *TrailerEntity) GetRotation() framework.Radian {
-	return t.Trailer.Position.Angle
-}
-
-func (t *TrailerEntity) GetScale() framework.Vec2 {
-	return framework.Vec2{1, 1}
-}
-
-func (t *TrailerEntity) GetPivot() framework.VecUV {
-	return t.Trailer.Pivot
-}
-
 func NewTrailer(pos framework.DirectionPosition, size framework.Size, mass float64, trType models.TrailerType) *TrailerEntity {
 	t := &TrailerEntity{
-		GameEntity: framework.InitGameEntity(),
-		Sprite:     framework.InitSprites(),
-		Trailer:    models.NewTrailer(size, mass, trType),
+		Sprite:  framework.InitSprites(),
+		Trailer: models.NewTrailer(size, mass, trType),
 	}
+	t.GameEntity = framework.InitGameEntity(t)
 	t.Trailer.Position = pos
 	t.LoadResources(&loader.ResourceLoader{}, loader.TrailerFileNames[trType])
 
@@ -61,7 +41,30 @@ func (t *TrailerEntity) GetTransforms(scale float64) *ebiten.DrawImageOptions {
 	return op
 }
 
-func (t *TrailerEntity) AddComponent(c framework.IComponent) {
-	c.SetOwner(t)
-	t.GameEntity.AddComponent(c)
+func (t *TrailerEntity) GetSize() framework.Size {
+	return t.Trailer.Size
+}
+
+func (t *TrailerEntity) GetPosition() framework.Vec2 {
+	return t.Trailer.Position.Vec2
+}
+
+func (t *TrailerEntity) GetRotation() framework.Radian {
+	return t.Trailer.Position.Angle
+}
+
+func (t *TrailerEntity) GetScale() framework.Vec2 {
+	return framework.Vec2{1, 1}
+}
+
+func (t *TrailerEntity) GetPivot() framework.VecUV {
+	return t.Trailer.Pivot
+}
+
+func (t *TrailerEntity) GetName() string {
+	return "trailer"
+}
+
+func (t *TrailerEntity) GetModel() framework.Model {
+	return t.Trailer
 }

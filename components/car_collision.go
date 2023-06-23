@@ -7,10 +7,9 @@ import (
 type CarCollision struct {
 	*framework.Component
 	*framework.Collision
-	obj framework.ICollisionOwner
 }
 
-func NewCarCollision(obj framework.ICollisionSizableOwner) *CarCollision {
+func NewCarCollision(obj framework.ICollisionComponentOwner) *CarCollision {
 	return &CarCollision{
 		Component: framework.InitComponent(),
 		Collision: framework.InitCollision(framework.NewBoxCollision(obj.GetSize(), obj)),

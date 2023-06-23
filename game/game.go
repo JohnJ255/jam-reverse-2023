@@ -8,27 +8,19 @@ import (
 	"reverse-jam-2023/entities"
 	"reverse-jam-2023/framework"
 	"reverse-jam-2023/models"
+	"reverse-jam-2023/scenes"
 	"strconv"
 )
 
 type Game struct {
-	player     *entities.CarEntity
-	level      framework.Drawing
+	level      *scenes.Level
 	WindowSize framework.IntSize
 	scale      float64
 }
 
 func NewGame() *Game {
-	car := models.NewSportCar(0)
-	car.Position.X = 300
-	car.Position.Y = 100
-	car.Position.Angle = framework.Degrees(45).ToRadians()
-	playerCar := entities.NewCar(framework.Player, car)
-	playerCar.AddComponent(components.NewPlayerCarControl())
-	playerCar.AddComponent(components.NewCarCollision(playerCar))
 	return &Game{
-		player: playerCar,
-		level:  entities.NewLevel(1),
+		level: scenes.NewLevel(1),
 		WindowSize: framework.IntSize{
 			Width:  800,
 			Height: 600,
@@ -38,39 +30,41 @@ func NewGame() *Game {
 }
 
 func (g *Game) Start(f *framework.Framework) {
-	f.AddEntity(g.player)
 	f.DebugModeEnable()
+	g.level.Init(1, f)
+
 	f.SetConsoleCommand("trailer", func(params ...string) string {
-		p := g.player
+		p := g.level.GetPlayer()
 		trType, err := strconv.Atoi(params[0])
 		if err != nil {
 			f.MessageToConsole("invalid parameter: need trailer type")
 		}
 		var trailer *entities.TrailerEntity
+		car := p.GetModel().(*models.Car)
 		if trType == 1 {
-			trailer = entities.NewTrailerToBackOfTractor(p.Car, p.Car.Size, 400, models.TrailerType(trType))
-			p.Car.AddTrailer(trailer.Trailer)
+			trailer = entities.NewTrailerToBackOfTractor(car, car.Size, 400, models.TrailerType(trType))
+			car.AddTrailer(trailer.Trailer)
 		} else {
-			trailer = entities.NewTrailer(framework.NewDPos(200, 200, 0), p.Car.Size, 400, models.TrailerType(trType))
+			trailer = entities.NewTrailer(framework.NewDPos(200, 200, 0), car.Size, 400, models.TrailerType(trType))
 		}
 		if trailer != nil {
-			trailer.AddComponent(components.NewTrailerCollision(trailer, g.player.GetComponent("CarCollision")))
+			trailer.AddComponent(components.NewTrailerCollision(trailer))
 			f.AddEntity(trailer)
 		}
 		return "trailer added"
 	})
 	f.SetConsoleCommand("towbar", func(params ...string) string {
-		p := g.player
+		car := g.level.GetPlayer().GetModel().(*models.Car)
 		if params[0] == "1" {
 			f.Debug.SetDebugDraw("towbar", func(screen *ebiten.Image) {
-				pos := p.Car.GetTowbarPosition()
+				pos := car.GetTowbarPosition()
 				vector.DrawFilledCircle(screen, float32(pos.X), float32(pos.Y), 4, color.NRGBA{0, 255, 0, 255}, false)
-				pos = p.Car.GetPosition().Vec2
+				pos = car.GetPosition().Vec2
 				vector.DrawFilledCircle(screen, float32(pos.X), float32(pos.Y), 4, color.NRGBA{0, 0, 255, 255}, false)
-				if p.Car.Trailer != nil {
-					pos = p.Car.Trailer.(*models.Trailer).Position.Vec2
+				if car.Trailer != nil {
+					pos = car.Trailer.(*models.Trailer).Position.Vec2
 					vector.DrawFilledCircle(screen, float32(pos.X), float32(pos.Y), 3, color.NRGBA{160, 160, 65, 255}, false)
-					pos = pos.Add(p.Car.Trailer.(*models.Trailer).GetTowbarLocalPosition())
+					pos = pos.Add(car.Trailer.(*models.Trailer).GetTowbarLocalPosition())
 					vector.DrawFilledCircle(screen, float32(pos.X), float32(pos.Y), 3, color.NRGBA{160, 0, 65, 255}, false)
 				}
 			})
@@ -90,7 +84,7 @@ func (g *Game) Start(f *framework.Framework) {
 	})
 
 	f.MakeConsoleCommand("towbar 1")
-	f.MakeConsoleCommand("trailer 1")
+	//f.MakeConsoleCommand("trailer 1")
 	f.MakeConsoleCommand("show_collisions 1")
 }
 

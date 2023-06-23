@@ -77,8 +77,12 @@ func (t *Trailer) calcInertionDependsMass() float64 {
 	return framework.Limited(t.baseInertion-k/10, 0.9, 0.999)
 }
 
-func (t *Trailer) AddTraktor(c TowbarInterface) {
+func (t *Trailer) ConnectTraktor(c TowbarInterface) {
 	t.Traktor = c
+}
+
+func (t *Trailer) DisconnectTraktor() {
+	t.Traktor = nil
 }
 
 func (t *Trailer) GetTowbarLocalPosition() framework.Vec2 {

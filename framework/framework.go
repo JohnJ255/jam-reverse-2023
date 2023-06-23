@@ -18,6 +18,7 @@ type Game interface {
 type Framework struct {
 	game         Game
 	entities     []Entity
+	collisions   []*Collision
 	lastUpdate   time.Time
 	console      *Console
 	windowWidth  int
@@ -143,4 +144,15 @@ func (f *Framework) AddEntity(entity Entity) {
 	if f.WorldStarted {
 		entity.Start(f)
 	}
+}
+
+// TODO: refactoring to find only closest collisions
+func (f *Framework) GetClosestCollisonsFor(collision *Collision) []*Collision {
+	res := make([]*Collision, 0)
+	for _, c := range f.collisions {
+		if collision != c {
+			res = append(res, c)
+		}
+	}
+	return res
 }

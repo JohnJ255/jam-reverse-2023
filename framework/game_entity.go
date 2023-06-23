@@ -11,15 +11,20 @@ type IComponent interface {
 	SetOwner(g Updating)
 }
 
+type Model interface {
+}
+
 type GameEntity struct {
 	Name       string
 	Enabled    bool
 	Components []IComponent
+	Owner      Updating
 }
 
-func InitGameEntity() *GameEntity {
+func InitGameEntity(owner Updating) *GameEntity {
 	return &GameEntity{
 		Components: make([]IComponent, 0),
+		Owner:      owner,
 	}
 }
 
@@ -40,6 +45,7 @@ func (g *GameEntity) Update(dt float64) {
 }
 
 func (g *GameEntity) AddComponent(c IComponent) {
+	c.SetOwner(g.Owner)
 	g.Components = append(g.Components, c)
 }
 
