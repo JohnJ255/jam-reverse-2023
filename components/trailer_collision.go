@@ -50,15 +50,15 @@ func (c *TrailerCollision) Update(_ float64) {
 			trailer := c.GetOwner().(*entities.TrailerEntity)
 			traktor := collision.GetEntity().(*entities.CarEntity)
 			if trailer.Trailer.Traktor != nil && trailer.Trailer.Traktor == traktor.Car {
-				c.rotateTrailer(trailer, cs)
+				c.rotateJoinedTrailer(trailer, cs)
 			} else {
-				c.moveTrailer(trailer, cs)
+				c.moveAloneTrailer(trailer, cs)
 			}
 		}
 	}
 }
 
-func (c *TrailerCollision) rotateTrailer(trailer *entities.TrailerEntity, cs []framework.ContactSet) {
+func (c *TrailerCollision) rotateJoinedTrailer(trailer *entities.TrailerEntity, cs []framework.ContactSet) {
 	sign := framework.Radian(0.1)
 	if cs[0].MoveOut.ToRadian().LefterThan(trailer.Trailer.Position.Angle) {
 		sign = -0.1
@@ -66,17 +66,16 @@ func (c *TrailerCollision) rotateTrailer(trailer *entities.TrailerEntity, cs []f
 	trailer.Trailer.Position.Angle += sign
 }
 
-func (c *TrailerCollision) moveTrailer(trailer *entities.TrailerEntity, cs []framework.ContactSet) {
+func (c *TrailerCollision) moveAloneTrailer(trailer *entities.TrailerEntity, cs []framework.ContactSet) {
 	cts := cs[0]
 	if cts.MoveOut == nil {
 		return
 	}
-	center := framework.CalcCenter([]framework.Vec2{trailer.Trailer.Position.Vec2, *cts.Center})
 	sign := framework.Radian(0.1)
-	if trailer.Trailer.Position.Angle.LefterThan(trailer.Trailer.Position.Vec2.RotateAround(cts.MoveOut.ToRadian(), *center).ToRadian()) {
+	if trailer.Trailer.Position.Angle.LefterThan((*cts.MoveOut).ToRadian()) {
 		sign = -0.1
 	}
 	trailer.Trailer.Position.Angle += sign
-	//trailer.Trailer.Position.X += cs[0].MoveOut.X
-	//trailer.Trailer.Position.Y += cs[0].MoveOut.Y
+	trailer.Trailer.Position.X += cs[0].MoveOut.X
+	trailer.Trailer.Position.Y += cs[0].MoveOut.Y
 }

@@ -142,11 +142,13 @@ func (p *CollisionShapePolygon) CalcMoveOut(set ContactSet, other ICollisionFigu
 	case *CollisionShapePolygon:
 		v1 := p.crossPolySAT(otherP, p.axesSAT())
 		v2 := p.crossPolySAT(otherP, otherP.axesSAT())
+		if v1 == nil || v2 == nil {
+			return nil
+		}
 		if v1.Length() < v2.Length() {
 			return v1
 		}
 		return v2
-		//return p.crossPolySAT(otherP, p.axesSAT())
 	}
 
 	return nil
