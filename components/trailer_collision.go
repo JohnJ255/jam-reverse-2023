@@ -45,20 +45,19 @@ func (c *TrailerCollision) Start(f *framework.Framework) {
 func (c *TrailerCollision) Update(_ float64) {
 	for _, collision := range c.f.GetClosestCollisonsFor(c.Collision) {
 		cs := c.Collision.Intersect(collision)
-		c.f.Debug.SetDebugDraw("TrailerCollision", c.f.Debug.DefaultDrawIntersections(cs))
 		if len(cs) > 0 && cs[0].MoveOut != nil {
 			trailer := c.GetOwner().(*entities.TrailerEntity)
 			traktor := collision.GetEntity().(*entities.CarEntity)
 			if trailer.Trailer.Traktor != nil && trailer.Trailer.Traktor == traktor.Car {
-				c.rotateJoinedTrailer(trailer, cs)
+				c.onCollideWithTractor(trailer, cs)
 			} else {
-				c.moveAloneTrailer(trailer, cs)
+				c.OnCollide(trailer, cs)
 			}
 		}
 	}
 }
 
-func (c *TrailerCollision) rotateJoinedTrailer(trailer *entities.TrailerEntity, cs []framework.ContactSet) {
+func (c *TrailerCollision) onCollideWithTractor(trailer *entities.TrailerEntity, cs []framework.ContactSet) {
 	sign := framework.Radian(0.1)
 	if cs[0].MoveOut.ToRadian().LefterThan(trailer.Trailer.Position.Angle) {
 		sign = -0.1
@@ -66,16 +65,21 @@ func (c *TrailerCollision) rotateJoinedTrailer(trailer *entities.TrailerEntity, 
 	trailer.Trailer.Position.Angle += sign
 }
 
-func (c *TrailerCollision) moveAloneTrailer(trailer *entities.TrailerEntity, cs []framework.ContactSet) {
+func (c *TrailerCollision) OnCollide(trailer *entities.TrailerEntity, cs []framework.ContactSet) {
 	cts := cs[0]
 	if cts.MoveOut == nil {
 		return
 	}
-	sign := framework.Radian(0.1)
-	if trailer.Trailer.Position.Angle.LefterThan((*cts.MoveOut).ToRadian()) {
-		sign = -0.1
+	if trailer.Trailer.Traktor == nil {
+		sign := framework.Radian(0.01)
+		if trailer.Trailer.Position.Angle.LefterThan((*cts.MoveOut).ToRadian()) {
+			sign = -0.01
+		}
+		trailer.Trailer.Position.Angle += sign
 	}
-	trailer.Trailer.Position.Angle += sign
 	trailer.Trailer.Position.X += cs[0].MoveOut.X
 	trailer.Trailer.Position.Y += cs[0].MoveOut.Y
+	if trailer.Trailer.Traktor != nil {
+		trailer.Trailer.Traktor.OnTrailerContacts(cs)
+	}
 }

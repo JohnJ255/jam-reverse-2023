@@ -16,7 +16,7 @@ type TrailerJoin interface {
 	GetPivot() framework.VecUV
 	ConnectTraktor(towbar TowbarInterface)
 	DisconnectTraktor()
-	Control(velocity framework.Vec2)
+	Control()
 }
 
 type Car struct {
@@ -87,10 +87,6 @@ func (c *Car) Control(accelerate float64, wheelRotation float64) {
 	c.Position.X += dx
 	c.Position.Y += dy
 
-	if c.Trailer != nil {
-		c.Trailer.Control(framework.Vec2{dx, dy})
-	}
-
 	framework.DebugWatchAdd("Speed", func() string {
 		return fmt.Sprintf("%f", c.speed)
 	})
@@ -155,5 +151,12 @@ func (c *Car) TowbarToggle() {
 	} else {
 		c.Trailer.ConnectTraktor(c)
 	}
+}
 
+func (c *Car) OnTrailerContacts(contacts []framework.ContactSet) {
+	if c.Trailer != nil {
+		c.Position.X += contacts[0].MoveOut.X
+		c.Position.Y += contacts[0].MoveOut.Y
+
+	}
 }

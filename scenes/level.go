@@ -47,6 +47,13 @@ func (l *Level) Init(index int, f *framework.Framework) {
 		trailer1 := entities.NewTrailer(framework.NewDPos(300, 100, framework.Degrees(45).ToRadians()), car.Size, 400, models.TrailerType(1))
 		trailer1.AddComponent(components.NewTrailerCollision(trailer1))
 		f.AddEntity(trailer1)
+
+		xmcar := models.NewSportCar(framework.Degrees(90))
+		xmcar.Position.X = 400
+		xmcar.Position.Y = 300
+		xcar := entities.NewCar(framework.Computer, xmcar)
+		xcar.AddComponent(components.NewCarCollision(xcar))
+		f.AddEntity(xcar)
 	}
 
 	if index == 2 {
@@ -59,6 +66,13 @@ func (l *Level) Init(index int, f *framework.Framework) {
 		f.AddEntity(trailer1)
 
 		car.ConnectTrailer(trailer1.Trailer)
+
+		xmcar := models.NewSportCar(framework.Degrees(90))
+		xmcar.Position.X = 400
+		xmcar.Position.Y = 300
+		xcar := entities.NewCar(framework.Computer, xmcar)
+		xcar.AddComponent(components.NewCarCollision(xcar))
+		f.AddEntity(xcar)
 	}
 }
 

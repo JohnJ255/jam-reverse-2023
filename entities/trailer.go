@@ -68,3 +68,8 @@ func (t *TrailerEntity) GetName() string {
 func (t *TrailerEntity) GetModel() framework.Model {
 	return t.Trailer
 }
+
+func (t *TrailerEntity) Update(dt float64) {
+	t.GameEntity.Update(dt)
+	t.Trailer.Control()
+}

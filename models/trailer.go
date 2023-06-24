@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"math"
 	"reverse-jam-2023/framework"
 )
@@ -8,6 +9,7 @@ import (
 type TowbarInterface interface {
 	GetPosition() framework.DirectionPosition
 	GetTowbarPosition() framework.Vec2
+	OnTrailerContacts(contacts []framework.ContactSet)
 }
 
 type TrailerType int
@@ -19,16 +21,17 @@ const (
 )
 
 type Trailer struct {
-	Trailer      TrailerJoin
-	Traktor      TowbarInterface
-	Position     framework.DirectionPosition
-	Size         framework.Size
-	Pivot        framework.VecUV
-	trType       TrailerType
-	health       int
-	maxHealth    int
-	baseInertion float64
-	mass         float64
+	Trailer        TrailerJoin
+	Traktor        TowbarInterface
+	Position       framework.DirectionPosition
+	Size           framework.Size
+	Pivot          framework.VecUV
+	trType         TrailerType
+	health         int
+	maxHealth      int
+	baseInertion   float64
+	mass           float64
+	prevTraktorPos *framework.Vec2
 }
 
 func NewTrailer(size framework.Size, mass float64, trType TrailerType) *Trailer {
@@ -82,13 +85,24 @@ func (t *Trailer) GetTowbarLocalPosition() framework.Vec2 {
 	return framework.Vec2{x, y}
 }
 
-func (t *Trailer) Control(velocity framework.Vec2) {
+func (t *Trailer) Control() {
 	if t.Traktor == nil {
 		return
 	}
 
+	t.followTraktor()
+}
+
+func (t *Trailer) followTraktor() {
 	tlp := t.GetTowbarLocalPosition()
-	t.Position.X = t.Traktor.GetTowbarPosition().X - tlp.X
-	t.Position.Y = t.Traktor.GetTowbarPosition().Y - tlp.Y
+	towbarPos := t.Traktor.GetTowbarPosition()
+	if t.prevTraktorPos == nil {
+		t.prevTraktorPos = &towbarPos
+	}
+	t.Position.X = towbarPos.X - tlp.X
+	t.Position.Y = towbarPos.Y - tlp.Y
+	velocity := towbarPos.Sub(*t.prevTraktorPos)
+	fmt.Println("Trailer velocity", velocity)
 	t.Position.Angle = tlp.Add(velocity).ToRadian()
+	t.prevTraktorPos = &towbarPos
 }
