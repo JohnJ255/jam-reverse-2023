@@ -111,10 +111,14 @@ func (p *CollisionShapePolygon) crossPolySAT(other *CollisionShapePolygon, axes 
 			return nil
 		}
 		if smallest.Length() > cross {
-			smallest = axis.Mul(cross)
+			if pr1.Min < pr2.Min {
+				smallest = axis.Mul(-cross)
+			} else {
+				smallest = axis.Mul(cross)
+			}
+
 		}
 	}
-	smallest = smallest.Mul(-1)
 	return &smallest
 }
 
@@ -142,6 +146,7 @@ func (p *CollisionShapePolygon) CalcMoveOut(set ContactSet, other ICollisionFigu
 			return v1
 		}
 		return v2
+		//return p.crossPolySAT(otherP, p.axesSAT())
 	}
 
 	return nil

@@ -59,9 +59,9 @@ func (l PolygonLine) IntersectionWithLine(line *PolygonLine) *Vec2 {
 
 func (l PolygonLine) Normal() Vec2 {
 	v := l.ToVec2()
-	return Vec2{v.Y, -v.X}.Normalize()
+	return Vec2{-v.Y, v.X}.Normalize()
 }
 
 func (l PolygonLine) ToVec2() Vec2 {
-	return l.end.Sub(l.start).Normalize()
+	return l.end.Sub(l.start)
 }
