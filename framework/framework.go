@@ -160,6 +160,16 @@ func (f *Framework) AddEntity(entity Entity) {
 	}
 }
 
+func (f *Framework) RemoveEntity(entity Entity) {
+	res := make([]Entity, 0, len(f.entities))
+	for _, ent := range f.entities {
+		if ent != entity {
+			res = append(res, ent)
+		}
+	}
+	f.entities = res
+}
+
 // TODO: refactoring to find only closest collisions
 func (f *Framework) GetClosestCollisonsFor(collision *Collision) []*Collision {
 	res := make([]*Collision, 0)
@@ -177,6 +187,10 @@ func (f *Framework) RegisterCollision(collision *Collision, owner ICollisionOwne
 	}
 	collision.SetEntity(owner)
 	f.collisions = append(f.collisions, collision)
+}
+
+func (f *Framework) FlushCollisions() {
+	f.collisions = make([]*Collision, 0)
 }
 
 func (f *Framework) AddAfterUpdate(afterUpdate func()) {

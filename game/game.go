@@ -2,6 +2,7 @@ package game
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"image/color"
 	"reverse-jam-2023/components"
@@ -15,6 +16,7 @@ type Game struct {
 	level      *Level
 	WindowSize framework.IntSize
 	scale      float64
+	f          *framework.Framework
 }
 
 func NewGame() *Game {
@@ -25,7 +27,7 @@ func NewGame() *Game {
 		},
 		scale: 0.1,
 	}
-	g.level = NewLevel(2, g)
+	g.level = NewLevel(1, g)
 
 	return g
 }
@@ -33,6 +35,7 @@ func NewGame() *Game {
 func (g *Game) Start(f *framework.Framework) {
 	f.DebugModeEnable()
 	g.level.Init(f)
+	g.f = f
 
 	f.SetConsoleCommand("trailer", func(params ...string) string {
 		p := g.level.GetPlayer()
@@ -90,6 +93,10 @@ func (g *Game) Start(f *framework.Framework) {
 }
 
 func (g *Game) Update(dt float64) error {
+	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
+		g.level.Change(g.f, g.level.index+1)
+	}
+
 	g.level.Update(dt)
 	return nil
 }

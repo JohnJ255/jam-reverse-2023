@@ -2,29 +2,36 @@ package game
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"reverse-jam-2023/components"
 	"reverse-jam-2023/entities"
 	"reverse-jam-2023/framework"
 	"reverse-jam-2023/loader"
-	"reverse-jam-2023/models"
 	"strconv"
 )
 
+type ILevelFillter interface {
+	Fill(level *Level)
+}
+
 type Level struct {
 	*framework.Sprite
-	name   string
-	size   framework.Size
-	player *entities.CarEntity
-	camera framework.ICamera
+	index     int
+	name      string
+	size      framework.Size
+	player    *entities.CarEntity
+	camera    framework.ICamera
+	framework *framework.Framework
+	entities  []framework.Entity
 }
 
 func NewLevel(index int, g *Game) *Level {
 	bgSize := framework.Size{1200, 600}
 	level := &Level{
-		Sprite: framework.InitSprites(bgSize),
-		name:   "level " + strconv.Itoa(index),
-		size:   bgSize,
+		Sprite:   framework.InitSprites(bgSize),
+		size:     bgSize,
+		index:    index,
+		entities: make([]framework.Entity, 0),
 	}
+	level.name = level.makeName(index)
 	level.camera = framework.NewFollowCamera(level.size.Sub(g.WindowSize.AsVec2()), level.Sprite)
 	level.LoadResources(&loader.ResourceLoader{}, loader.LevelFileNames[index])
 
@@ -32,48 +39,9 @@ func NewLevel(index int, g *Game) *Level {
 }
 
 func (l *Level) Init(f *framework.Framework) {
-	car := models.NewSportCar(0)
-	playerCar := entities.NewCar(framework.Player, car)
-	playerCar.AddComponent(components.NewPlayerCarControl(l.size))
-	playerCar.AddComponent(components.NewCarCollision(playerCar))
-	l.player = playerCar
-	f.AddEntity(playerCar)
-
-	if l.name == "level 1" {
-		car.Position.X = 200
-		car.Position.Y = 300
-		car.Position.Angle = framework.Degrees(-45).ToRadians()
-
-		trailer1 := entities.NewTrailer(framework.NewDPos(300, 100, framework.Degrees(45).ToRadians()), car.Size, 100, models.TrailerType(1))
-		trailer1.AddComponent(components.NewTrailerCollision(trailer1))
-		f.AddEntity(trailer1)
-
-		xmcar := models.NewSportCar(framework.Degrees(90))
-		xmcar.Position.X = 400
-		xmcar.Position.Y = 300
-		xcar := entities.NewCar(framework.Computer, xmcar)
-		xcar.AddComponent(components.NewCarCollision(xcar))
-		f.AddEntity(xcar)
-	}
-
-	if l.name == "level 2" {
-		car.Position.X = 200
-		car.Position.Y = 300
-		car.Position.Angle = framework.Degrees(25).ToRadians()
-
-		trailer1 := entities.NewTrailerToBackOfTractor(car, car.Size, 100, models.TrailerType(1))
-		trailer1.AddComponent(components.NewTrailerCollision(trailer1))
-		f.AddEntity(trailer1)
-
-		car.ConnectTrailer(trailer1.Trailer)
-
-		xmcar := models.NewSportCar(framework.Degrees(90))
-		xmcar.Position.X = 400
-		xmcar.Position.Y = 300
-		xcar := entities.NewCar(framework.Computer, xmcar)
-		xcar.AddComponent(components.NewCarCollision(xcar))
-		f.AddEntity(xcar)
-	}
+	l.framework = f
+	f.FlushCollisions()
+	l.Fill()
 }
 
 func (l *Level) GetPlayer() framework.Entity {
@@ -90,4 +58,37 @@ func (l *Level) GetSize() framework.Size {
 
 func (l *Level) GetTransforms(scale float64) *ebiten.DrawImageOptions {
 	return l.Sprite.PivotTransform(scale, framework.VecUV{})
+}
+
+func (l *Level) Change(f *framework.Framework, index int) {
+	for _, entity := range l.entities {
+		f.RemoveEntity(entity)
+	}
+	f.FlushCollisions()
+
+	l.LoadResources(&loader.ResourceLoader{}, loader.LevelFileNames[index])
+	l.name = l.makeName(index)
+	l.Fill()
+}
+
+func (l *Level) AddEntity(entity framework.Entity) {
+	l.entities = append(l.entities, entity)
+	l.framework.AddEntity(entity)
+}
+
+func (l *Level) makeName(index int) string {
+	return "level " + strconv.Itoa(index)
+}
+
+func (l *Level) Fill() {
+	var levelFiller ILevelFillter
+
+	switch l.name {
+	case "level 1":
+		levelFiller = &Level1{}
+	case "level 2":
+		levelFiller = &Level2{}
+	}
+
+	levelFiller.Fill(l)
 }
