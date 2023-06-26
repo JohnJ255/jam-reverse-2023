@@ -1,5 +1,21 @@
 package framework
 
+type IPositioning interface {
+	GetPosition() Vec2
+	GetRotation() Radian
+	SetPosition(pos Vec2)
+	SetRotation(rot Radian)
+}
+
+type ISizable interface {
+	GetSize() Size
+}
+
+type IGameObject interface {
+	IPositioning
+	ISizable
+}
+
 type IComponent interface {
 	GetName() string
 	Start(f *Framework)

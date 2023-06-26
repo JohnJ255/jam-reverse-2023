@@ -1,10 +1,7 @@
 package framework
 
 type IPhysicsObject interface {
-	GetPosition() Vec2
-	GetRotation() Radian
-	SetPosition(pos Vec2)
-	SetRotation(rot Radian)
+	IPositioning
 	IsFixed() bool
 	GetMass() float64
 	GetFriction() float64

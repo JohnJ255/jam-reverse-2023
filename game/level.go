@@ -1,4 +1,4 @@
-package scenes
+package game
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
@@ -14,7 +14,8 @@ type Level struct {
 	*framework.Sprite
 	name   string
 	size   framework.Size
-	player framework.Entity
+	player *entities.CarEntity
+	camera framework.ICamera
 }
 
 func NewLevel(index int) *Level {
@@ -23,15 +24,16 @@ func NewLevel(index int) *Level {
 		name:   "level " + strconv.Itoa(index),
 		size:   framework.Size{1200, 600},
 	}
+	level.camera = framework.NewStaticCamera(level, level.Sprite)
 	level.LoadResources(&loader.ResourceLoader{}, loader.LevelFileNames[index])
 	return level
 }
 
 func (l *Level) GetTransforms(scale float64) *ebiten.DrawImageOptions {
-	return l.PivotTransform(scale, l.size, framework.VecUV{})
+	return l.camera.GetTransforms(scale)
 }
 
-func (l *Level) Init(index int, f *framework.Framework) {
+func (l *Level) Init(f *framework.Framework) {
 	car := models.NewSportCar(0)
 	playerCar := entities.NewCar(framework.Player, car)
 	playerCar.AddComponent(components.NewPlayerCarControl())
@@ -39,7 +41,7 @@ func (l *Level) Init(index int, f *framework.Framework) {
 	l.player = playerCar
 	f.AddEntity(playerCar)
 
-	if index == 1 {
+	if l.name == "level 1" {
 		car.Position.X = 200
 		car.Position.Y = 300
 		car.Position.Angle = framework.Degrees(-45).ToRadians()
@@ -56,7 +58,7 @@ func (l *Level) Init(index int, f *framework.Framework) {
 		f.AddEntity(xcar)
 	}
 
-	if index == 2 {
+	if l.name == "level 2" {
 		car.Position.X = 200
 		car.Position.Y = 300
 		car.Position.Angle = framework.Degrees(25).ToRadians()
@@ -78,4 +80,12 @@ func (l *Level) Init(index int, f *framework.Framework) {
 
 func (l *Level) GetPlayer() framework.Entity {
 	return l.player
+}
+
+func (l *Level) Update(dt float64) {
+	l.camera.Control(l.player)
+}
+
+func (l *Level) GetSize() framework.Size {
+	return l.size
 }

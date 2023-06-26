@@ -8,19 +8,18 @@ import (
 	"reverse-jam-2023/entities"
 	"reverse-jam-2023/framework"
 	"reverse-jam-2023/models"
-	"reverse-jam-2023/scenes"
 	"strconv"
 )
 
 type Game struct {
-	level      *scenes.Level
+	level      *Level
 	WindowSize framework.IntSize
 	scale      float64
 }
 
 func NewGame() *Game {
 	return &Game{
-		level: scenes.NewLevel(1),
+		level: NewLevel(1),
 		WindowSize: framework.IntSize{
 			Width:  800,
 			Height: 600,
@@ -31,7 +30,7 @@ func NewGame() *Game {
 
 func (g *Game) Start(f *framework.Framework) {
 	f.DebugModeEnable()
-	g.level.Init(1, f)
+	g.level.Init(f)
 
 	f.SetConsoleCommand("trailer", func(params ...string) string {
 		p := g.level.GetPlayer()
@@ -89,6 +88,7 @@ func (g *Game) Start(f *framework.Framework) {
 }
 
 func (g *Game) Update(dt float64) error {
+	g.level.Update(dt)
 	return nil
 }
 

@@ -4,23 +4,19 @@ import (
 	"math"
 )
 
-type ISizable interface {
-	GetSize() Size
-}
-
 type ICollisionOwner interface {
 	IPhysicsObject
 	GetScale() Vec2
 	GetPivot() VecUV
 }
 
-type ICollisionSizableOwner interface {
+type ISizableCollisionOwner interface {
 	ISizable
 	ICollisionOwner
 }
 
 type ICollisionComponentOwner interface {
-	ICollisionSizableOwner
+	ISizableCollisionOwner
 	Updating
 }
 
