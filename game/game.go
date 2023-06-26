@@ -31,7 +31,7 @@ func NewGame() *Game {
 
 func (g *Game) Start(f *framework.Framework) {
 	f.DebugModeEnable()
-	g.level.Init(2, f)
+	g.level.Init(1, f)
 
 	f.SetConsoleCommand("trailer", func(params ...string) string {
 		p := g.level.GetPlayer()

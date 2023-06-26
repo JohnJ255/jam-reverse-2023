@@ -24,7 +24,7 @@ func (p *PhysicTop) ProcessingCollide(obj IPhysicsObject, collide *Collide) {
 		pos.X += cs.MoveOut.X
 		pos.Y += cs.MoveOut.Y
 
-		sign := p.calcAngleStep(obj.GetMass() / other.GetMass())
+		sign := p.calcAngleStep(other.GetMass() / obj.GetMass())
 		if obj.GetRotation().LefterThan((*cs.MoveOut).ToRadian()) {
 			sign *= -1
 		}
