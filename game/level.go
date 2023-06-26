@@ -19,10 +19,11 @@ type Level struct {
 }
 
 func NewLevel(index int) *Level {
+	bgSize := framework.Size{1200, 600}
 	level := &Level{
-		Sprite: framework.InitSprites(),
+		Sprite: framework.InitSprites(bgSize),
 		name:   "level " + strconv.Itoa(index),
-		size:   framework.Size{1200, 600},
+		size:   bgSize,
 	}
 	level.camera = framework.NewStaticCamera(level, level.Sprite)
 	level.LoadResources(&loader.ResourceLoader{}, loader.LevelFileNames[index])

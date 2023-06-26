@@ -15,7 +15,7 @@ type TrailerEntity struct {
 
 func NewTrailer(pos framework.DirectionPosition, size framework.Size, mass float64, trType models.TrailerType) *TrailerEntity {
 	t := &TrailerEntity{
-		Sprite:  framework.InitSprites(),
+		Sprite:  framework.InitSprites(size),
 		Trailer: models.NewTrailer(size, mass, trType),
 	}
 	t.GameEntity = framework.InitGameEntity(t)
@@ -34,7 +34,7 @@ func NewTrailerToBackOfTractor(trac models.TowbarInterface, size framework.Size,
 }
 
 func (t *TrailerEntity) GetTransforms(scale float64) *ebiten.DrawImageOptions {
-	op := t.PivotTransform(scale, t.Trailer.Size, t.Trailer.Pivot)
+	op := t.PivotTransform(scale, t.Trailer.Pivot)
 	op.GeoM.Rotate(float64(t.Trailer.Position.Angle))
 	op.GeoM.Translate(t.Trailer.Position.X, t.Trailer.Position.Y)
 

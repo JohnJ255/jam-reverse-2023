@@ -20,12 +20,14 @@ type Sprite struct {
 	DrawAngle       Radian
 	GetSpriteFunc   func() *ebiten.Image
 	CurrentImgIndex int
+	toSize          Size
 }
 
-func InitSprites() *Sprite {
+func InitSprites(toSize Size) *Sprite {
 	b := &Sprite{
 		Visible: true,
 		Imgs:    make([]*ebiten.Image, 0),
+		toSize:  toSize,
 	}
 	b.GetSpriteFunc = b.getBaseSprite
 	return b
@@ -47,19 +49,27 @@ func (b *Sprite) getBaseSprite() *ebiten.Image {
 	return b.Imgs[b.CurrentImgIndex]
 }
 
-func (b *Sprite) PivotTransform(scale float64, size Size, pivot VecUV) *ebiten.DrawImageOptions {
+func (b *Sprite) PivotTransform(scale float64, pivot VecUV) *ebiten.DrawImageOptions {
 	op := &ebiten.DrawImageOptions{}
 
 	op.GeoM.Rotate(float64(b.DrawAngle))
 
 	spriteSize := b.GetSprite().Bounds().Size()
-	scaleX := scale * size.Length / (float64(spriteSize.X)*math.Cos(float64(b.DrawAngle)) + float64(spriteSize.Y)*math.Sin(float64(b.DrawAngle)))
-	scaleY := scale * size.Height / (float64(spriteSize.X)*math.Sin(float64(b.DrawAngle)) + float64(spriteSize.Y)*math.Cos(float64(b.DrawAngle)))
+	scaleX := scale * b.toSize.Length / (float64(spriteSize.X)*math.Cos(float64(b.DrawAngle)) + float64(spriteSize.Y)*math.Sin(float64(b.DrawAngle)))
+	scaleY := scale * b.toSize.Height / (float64(spriteSize.X)*math.Sin(float64(b.DrawAngle)) + float64(spriteSize.Y)*math.Cos(float64(b.DrawAngle)))
 	op.GeoM.Scale(scaleX, scaleY)
 
-	tx := -size.Length * (pivot.U - math.Abs(math.Sin(float64(b.DrawAngle))))
-	ty := -size.Height * pivot.V
+	tx := -b.toSize.Length * (pivot.U - math.Abs(math.Sin(float64(b.DrawAngle))))
+	ty := -b.toSize.Height * pivot.V
 	op.GeoM.Translate(tx, ty)
 
 	return op
+}
+
+func (b *Sprite) SetToSize(size Size) {
+	b.toSize = size
+}
+
+func (b *Sprite) GetToSize() Size {
+	return b.toSize
 }

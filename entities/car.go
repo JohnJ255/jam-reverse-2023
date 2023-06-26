@@ -16,7 +16,7 @@ type CarEntity struct {
 
 func NewCar(ct framework.ControlType, car *models.Car) *CarEntity {
 	c := &CarEntity{
-		Sprite:   framework.InitSprites(),
+		Sprite:   framework.InitSprites(car.Size),
 		Car:      car,
 		IsPlayer: ct == framework.Player,
 	}
@@ -55,7 +55,7 @@ func (c *CarEntity) GetScale() framework.Vec2 {
 }
 
 func (c *CarEntity) GetTransforms(scale float64) *ebiten.DrawImageOptions {
-	op := c.PivotTransform(scale, c.Car.Size, c.Car.Pivot)
+	op := c.PivotTransform(scale, c.Car.Pivot)
 	op.GeoM.Rotate(float64(c.Car.Position.Angle))
 	op.GeoM.Translate(c.Car.Position.X, c.Car.Position.Y)
 

@@ -27,9 +27,28 @@ func (s *StaticCamera) Control(_ IGameObject) {
 }
 
 func (s *StaticCamera) GetTransforms(scale float64) *ebiten.DrawImageOptions {
-	return s.Background.PivotTransform(scale, s.Limiter.GetSize(), VecUV{})
+	return s.Background.PivotTransform(scale, VecUV{})
 }
 
 type FollowCamera struct {
 	*StaticCamera
+	pos Vec2
+}
+
+func NewFollowCamera(limiter ISizable, background *Sprite) *FollowCamera {
+	return &FollowCamera{
+		StaticCamera: &StaticCamera{
+			Limiter:    limiter,
+			Background: background,
+		},
+	}
+}
+
+func (f *FollowCamera) Control(obj IGameObject) {
+	f.pos = obj.GetPosition()
+}
+
+func (f *FollowCamera) GetTransforms(scale float64) *ebiten.DrawImageOptions {
+	posUV := VecUV{f.pos.X, f.pos.Y}
+	return f.Background.PivotTransform(scale, posUV)
 }
