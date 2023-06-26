@@ -18,26 +18,23 @@ type Level struct {
 	camera framework.ICamera
 }
 
-func NewLevel(index int) *Level {
+func NewLevel(index int, g *Game) *Level {
 	bgSize := framework.Size{1200, 600}
 	level := &Level{
 		Sprite: framework.InitSprites(bgSize),
 		name:   "level " + strconv.Itoa(index),
 		size:   bgSize,
 	}
-	level.camera = framework.NewStaticCamera(level, level.Sprite)
+	level.camera = framework.NewFollowCamera(level.size.Sub(g.WindowSize.AsVec2()), level.Sprite)
 	level.LoadResources(&loader.ResourceLoader{}, loader.LevelFileNames[index])
-	return level
-}
 
-func (l *Level) GetTransforms(scale float64) *ebiten.DrawImageOptions {
-	return l.camera.GetTransforms(scale)
+	return level
 }
 
 func (l *Level) Init(f *framework.Framework) {
 	car := models.NewSportCar(0)
 	playerCar := entities.NewCar(framework.Player, car)
-	playerCar.AddComponent(components.NewPlayerCarControl())
+	playerCar.AddComponent(components.NewPlayerCarControl(l.size))
 	playerCar.AddComponent(components.NewCarCollision(playerCar))
 	l.player = playerCar
 	f.AddEntity(playerCar)
@@ -89,4 +86,8 @@ func (l *Level) Update(dt float64) {
 
 func (l *Level) GetSize() framework.Size {
 	return l.size
+}
+
+func (l *Level) GetTransforms(scale float64) *ebiten.DrawImageOptions {
+	return l.Sprite.PivotTransform(scale, framework.VecUV{})
 }

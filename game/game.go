@@ -18,14 +18,16 @@ type Game struct {
 }
 
 func NewGame() *Game {
-	return &Game{
-		level: NewLevel(1),
+	g := &Game{
 		WindowSize: framework.IntSize{
 			Width:  800,
 			Height: 600,
 		},
 		scale: 0.1,
 	}
+	g.level = NewLevel(2, g)
+
+	return g
 }
 
 func (g *Game) Start(f *framework.Framework) {
@@ -82,9 +84,9 @@ func (g *Game) Start(f *framework.Framework) {
 		return "collisions debug drawing disabled"
 	})
 
-	f.MakeConsoleCommand("towbar 1")
+	//f.MakeConsoleCommand("towbar 1")
 	//f.MakeConsoleCommand("trailer 1")
-	f.MakeConsoleCommand("show_collisions 1")
+	//f.MakeConsoleCommand("show_collisions 1")
 }
 
 func (g *Game) Update(dt float64) error {
@@ -94,10 +96,18 @@ func (g *Game) Update(dt float64) error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	if g.level != nil {
-		screen.DrawImage(g.level.GetSprite(), g.level.GetTransforms(1))
+		screen.DrawImage(g.level.GetSprite(), g.SceneTransform(g.level.GetTransforms(1)))
 	}
 }
 
 func (g *Game) GetTitle() string {
 	return "reverse-jam-2023"
+}
+
+func (g *Game) SceneTransform(transforms *ebiten.DrawImageOptions) *ebiten.DrawImageOptions {
+	pos := g.level.camera.GetPosition()
+
+	transforms.GeoM.Translate(-pos.X, -pos.Y)
+
+	return transforms
 }

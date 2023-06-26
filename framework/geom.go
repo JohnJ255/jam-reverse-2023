@@ -10,8 +10,18 @@ func (s Size) AsVec2() Vec2 {
 	return Vec2{s.Height, s.Length}
 }
 
+func (s Size) Sub(size Vec2) Size {
+	s.Height -= size.Y
+	s.Length -= size.X
+	return s
+}
+
 type IntSize struct {
 	Width, Height int
+}
+
+func (s IntSize) AsVec2() Vec2 {
+	return Vec2{float64(s.Width), float64(s.Height)}
 }
 
 type DirectionPosition struct {

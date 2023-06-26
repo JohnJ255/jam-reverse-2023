@@ -8,14 +8,16 @@ import (
 
 type PlayerCarControl struct {
 	*framework.Component
+	levelSize framework.Size
 }
 
 func (c *PlayerCarControl) GetName() string {
 	return "PlayerCarControl"
 }
 
-func NewPlayerCarControl() *PlayerCarControl {
+func NewPlayerCarControl(levelSize framework.Size) *PlayerCarControl {
 	return &PlayerCarControl{
+		levelSize: levelSize,
 		Component: framework.InitComponent(),
 	}
 }
@@ -42,4 +44,7 @@ func (c *PlayerCarControl) Update(dt float64) {
 	}
 
 	entity.Car.Control(accelerate, wheel)
+
+	entity.Car.Position.X = framework.Limited(entity.Car.Position.X, 0, c.levelSize.Length)
+	entity.Car.Position.Y = framework.Limited(entity.Car.Position.Y, 0, c.levelSize.Height)
 }

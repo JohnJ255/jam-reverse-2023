@@ -56,4 +56,10 @@ var LevelFileNames = map[int]*ImageResource{
 			"Level1.png",
 		},
 	},
+	2: {
+		Rotation: framework.AngleRight,
+		Filenames: []string{
+			"Level1.png",
+		},
+	},
 }

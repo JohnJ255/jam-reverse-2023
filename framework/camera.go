@@ -1,24 +1,20 @@
 package framework
 
-import (
-	"github.com/hajimehoshi/ebiten/v2"
-)
-
 type ICamera interface {
 	Control(obj IGameObject)
-	GetTransforms(scale float64) *ebiten.DrawImageOptions
+	GetPosition() Vec2
 }
 
 //todo: make camera as GameEntity
 
 type StaticCamera struct {
-	Limiter    ISizable
+	Limit      Size
 	Background *Sprite
 }
 
-func NewStaticCamera(limiter ISizable, background *Sprite) *StaticCamera {
+func NewStaticCamera(limit Size, background *Sprite) *StaticCamera {
 	return &StaticCamera{
-		Limiter:    limiter,
+		Limit:      limit,
 		Background: background,
 	}
 }
@@ -26,29 +22,26 @@ func NewStaticCamera(limiter ISizable, background *Sprite) *StaticCamera {
 func (s *StaticCamera) Control(_ IGameObject) {
 }
 
-func (s *StaticCamera) GetTransforms(scale float64) *ebiten.DrawImageOptions {
-	return s.Background.PivotTransform(scale, VecUV{})
-}
-
 type FollowCamera struct {
 	*StaticCamera
 	pos Vec2
 }
 
-func NewFollowCamera(limiter ISizable, background *Sprite) *FollowCamera {
+func (f *FollowCamera) GetPosition() Vec2 {
+	return f.pos
+}
+
+func NewFollowCamera(limit Size, background *Sprite) *FollowCamera {
 	return &FollowCamera{
 		StaticCamera: &StaticCamera{
-			Limiter:    limiter,
+			Limit:      limit,
 			Background: background,
 		},
 	}
 }
 
 func (f *FollowCamera) Control(obj IGameObject) {
-	f.pos = obj.GetPosition()
-}
-
-func (f *FollowCamera) GetTransforms(scale float64) *ebiten.DrawImageOptions {
-	posUV := VecUV{f.pos.X, f.pos.Y}
-	return f.Background.PivotTransform(scale, posUV)
+	f.pos = obj.GetPosition().Sub(Vec2{300, 300})
+	f.pos.X = Limited(f.pos.X, 0, f.Limit.Length)
+	f.pos.Y = Limited(f.pos.Y, 0, f.Limit.Height)
 }
