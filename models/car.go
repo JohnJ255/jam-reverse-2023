@@ -160,3 +160,7 @@ func (c *Car) OnTrailerContacts(contact framework.ContactSet) {
 
 	}
 }
+
+func (c *Car) GetMass() float64 {
+	return c.mass
+}

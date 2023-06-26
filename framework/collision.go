@@ -9,12 +9,9 @@ type ISizable interface {
 }
 
 type ICollisionOwner interface {
-	GetPosition() Vec2
-	GetRotation() Radian
+	IPhysicsObject
 	GetScale() Vec2
 	GetPivot() VecUV
-	SetPosition(pos Vec2)
-	SetRotation(rot Radian)
 }
 
 type ICollisionSizableOwner interface {
@@ -133,15 +130,7 @@ func (c *Collision) Intersect(collision *Collision) []ContactSet {
 }
 
 func (c *Collision) OnCollide(collide *Collide) {
-	if c.GetEntity() == nil {
-		return
-	}
-	pos := c.GetEntity().GetPosition()
-	for _, cs := range collide.Contacts {
-		pos.X += cs.MoveOut.X
-		pos.Y += cs.MoveOut.Y
-	}
-	c.GetEntity().SetPosition(pos)
+	c.f.physic.ProcessingCollide(c.GetEntity(), collide)
 }
 
 func (c *Collision) Start(f *Framework) {

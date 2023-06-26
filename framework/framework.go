@@ -15,6 +15,10 @@ type Game interface {
 	Draw(screen *ebiten.Image)
 }
 
+type IPhysicsEngine interface {
+	ProcessingCollide(obj IPhysicsObject, collide *Collide)
+}
+
 type Framework struct {
 	game         Game
 	entities     []Entity
@@ -28,6 +32,7 @@ type Framework struct {
 	Debug        *DebugTool
 	WorldStarted bool
 	afterUpdates []func()
+	physic       IPhysicsEngine
 }
 
 var fw *Framework
@@ -43,6 +48,7 @@ func InitWindowGame(g Game, windowWidth, windowHeight int, windowTitle string) *
 		windowTitle:  windowTitle,
 		console:      NewConsole(),
 		collisions:   make([]*Collision, 0),
+		physic:       &PhysicTop{},
 	}
 	fw.Debug = NewDebugTool(fw, &DefaultCollisionPainter{
 		color: color.NRGBA{40, 255, 40, 255},

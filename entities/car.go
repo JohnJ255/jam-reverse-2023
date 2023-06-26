@@ -69,3 +69,15 @@ func (c *CarEntity) GetName() string {
 func (c *CarEntity) GetModel() framework.Model {
 	return c.Car
 }
+
+func (c *CarEntity) IsFixed() bool {
+	return false
+}
+
+func (c *CarEntity) GetMass() float64 {
+	return c.Car.GetMass()
+}
+
+func (c *CarEntity) GetFriction() float64 {
+	return 1
+}

@@ -81,3 +81,15 @@ func (t *TrailerEntity) Update(dt float64) {
 	t.GameEntity.Update(dt)
 	t.Trailer.Control()
 }
+
+func (t *TrailerEntity) IsFixed() bool {
+	return false
+}
+
+func (t *TrailerEntity) GetMass() float64 {
+	return t.Trailer.GetMass()
+}
+
+func (t *TrailerEntity) GetFriction() float64 {
+	return 1
+}

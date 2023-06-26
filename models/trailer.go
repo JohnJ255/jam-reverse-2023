@@ -104,3 +104,7 @@ func (t *Trailer) followTraktor() {
 	t.Position.Angle = tlp.Add(velocity).ToRadian()
 	t.prevTraktorPos = &towbarPos
 }
+
+func (t *Trailer) GetMass() float64 {
+	return t.mass
+}

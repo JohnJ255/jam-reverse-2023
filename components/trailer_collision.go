@@ -51,7 +51,10 @@ func (c *TrailerCollision) OnCollide(collide *framework.Collide) {
 		if trailer.Trailer.Traktor != nil && trailer.Trailer.Traktor == traktor.Car {
 			c.onCollideWithTractor(trailer, cs)
 		} else {
-			c.OnCollideWithAny(trailer, cs)
+			c.Collision.OnCollide(collide)
+			if trailer.Trailer.Traktor != nil {
+				trailer.Trailer.Traktor.OnTrailerContacts(cs)
+			}
 		}
 	}
 }
@@ -67,22 +70,4 @@ func (c *TrailerCollision) onCollideWithTractor(trailer *entities.TrailerEntity,
 	towbarPos := trailer.Trailer.Traktor.GetTowbarPosition()
 	trailer.Trailer.Position.X = towbarPos.X - tlp.X
 	trailer.Trailer.Position.Y = towbarPos.Y - tlp.Y
-}
-
-func (c *TrailerCollision) OnCollideWithAny(trailer *entities.TrailerEntity, cs framework.ContactSet) {
-	if cs.MoveOut == nil {
-		return
-	}
-	if trailer.Trailer.Traktor == nil {
-		sign := framework.Radian(0.01)
-		if trailer.Trailer.Position.Angle.LefterThan((*cs.MoveOut).ToRadian()) {
-			sign = -0.01
-		}
-		trailer.Trailer.Position.Angle += sign
-	}
-	trailer.Trailer.Position.X += cs.MoveOut.X
-	trailer.Trailer.Position.Y += cs.MoveOut.Y
-	if trailer.Trailer.Traktor != nil {
-		trailer.Trailer.Traktor.OnTrailerContacts(cs)
-	}
 }

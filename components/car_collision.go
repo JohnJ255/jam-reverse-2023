@@ -36,12 +36,4 @@ func (c *CarCollision) OnCollide(collide *framework.Collide) {
 		return
 	}
 	c.Collision.OnCollide(collide)
-
-	for _, cs := range collide.Contacts {
-		sign := framework.Radian(0.01)
-		if car.GetRotation().LefterThan((*cs.MoveOut).ToRadian()) {
-			sign = -0.01
-		}
-		car.SetRotation(car.GetRotation() + sign)
-	}
 }
