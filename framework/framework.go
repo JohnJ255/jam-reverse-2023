@@ -27,6 +27,7 @@ type Framework struct {
 	ticks        uint64
 	Debug        *DebugTool
 	WorldStarted bool
+	afterUpdates []func()
 }
 
 var fw *Framework
@@ -41,6 +42,7 @@ func InitWindowGame(g Game, windowWidth, windowHeight int, windowTitle string) *
 		windowHeight: windowHeight,
 		windowTitle:  windowTitle,
 		console:      NewConsole(),
+		collisions:   make([]*Collision, 0),
 	}
 	fw.Debug = NewDebugTool(fw, &DefaultCollisionPainter{
 		color: color.NRGBA{40, 255, 40, 255},
@@ -86,6 +88,11 @@ func (f *Framework) Update() error {
 	for _, e := range entities {
 		e.Update(dt)
 	}
+
+	for _, afterUpdate := range f.afterUpdates {
+		afterUpdate()
+	}
+	f.afterUpdates = make([]func(), 0, len(f.afterUpdates))
 
 	return f.game.Update(dt)
 }
@@ -163,4 +170,8 @@ func (f *Framework) RegisterCollision(collision *Collision, owner ICollisionOwne
 	}
 	collision.SetEntity(owner)
 	f.collisions = append(f.collisions, collision)
+}
+
+func (f *Framework) AddAfterUpdate(afterUpdate func()) {
+	f.afterUpdates = append(f.afterUpdates, afterUpdate)
 }

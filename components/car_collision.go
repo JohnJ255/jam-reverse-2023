@@ -13,35 +13,35 @@ type CarCollision struct {
 }
 
 func NewCarCollision(obj framework.ICollisionComponentOwner) *CarCollision {
-	return &CarCollision{
+	cc := &CarCollision{
 		Component: framework.InitComponent(),
 		Collision: framework.InitCollision(framework.NewBoxCollision(obj.GetSize(), obj)),
 	}
+	cc.Collision.BehaviourOnCollide = cc.OnCollide
+	return cc
+}
+
+func (c *CarCollision) SetOwner(obj framework.Updating) {
+	c.Component.SetOwner(obj)
+	c.Collision.SetEntity(obj.(*entities.CarEntity))
 }
 
 func (c *CarCollision) GetName() string {
 	return "CarCollision"
 }
 
-func (c *CarCollision) Start(f *framework.Framework) {
-	c.f = f
-	f.RegisterCollision(c.Collision, c.GetOwner().(*entities.CarEntity))
-}
-
-func (c *CarCollision) Update(dt float64) {
-	for _, collision := range c.f.GetClosestCollisonsFor(c.Collision) {
-		cs := c.Collision.Intersect(collision)
-		if len(cs) > 0 && cs[0].MoveOut != nil {
-			car := c.GetOwner().(*entities.CarEntity)
-			if car.Car.Trailer != nil && collision.GetEntity().GetPosition() == car.Car.Trailer.(*models.Trailer).Position.Vec2 {
-				continue
-			}
-			c.OnCollide(car, cs)
-		}
+func (c *CarCollision) OnCollide(collide *framework.Collide) {
+	car := c.GetOwner().(*entities.CarEntity)
+	if car.Car.Trailer != nil && collide.Collision.GetEntity().GetPosition() == car.Car.Trailer.(*models.Trailer).Position.Vec2 {
+		return
 	}
-}
+	c.Collision.OnCollide(collide)
 
-func (c *CarCollision) OnCollide(car *entities.CarEntity, cs []framework.ContactSet) {
-	car.Car.Position.X += cs[0].MoveOut.X
-	car.Car.Position.Y += cs[0].MoveOut.Y
+	for _, cs := range collide.Contacts {
+		sign := framework.Radian(0.01)
+		if car.GetRotation().LefterThan((*cs.MoveOut).ToRadian()) {
+			sign = -0.01
+		}
+		car.SetRotation(car.GetRotation() + sign)
+	}
 }

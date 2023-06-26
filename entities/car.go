@@ -38,8 +38,16 @@ func (c *CarEntity) GetPosition() framework.Vec2 {
 	return c.Car.Position.Vec2
 }
 
+func (c *CarEntity) SetPosition(pos framework.Vec2) {
+	c.Car.Position.Vec2 = pos
+}
+
 func (c *CarEntity) GetRotation() framework.Radian {
 	return c.Car.Position.Angle
+}
+
+func (c *CarEntity) SetRotation(r framework.Radian) {
+	c.Car.Position.Angle = r
 }
 
 func (c *CarEntity) GetScale() framework.Vec2 {

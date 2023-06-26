@@ -153,10 +153,10 @@ func (c *Car) TowbarToggle() {
 	}
 }
 
-func (c *Car) OnTrailerContacts(contacts []framework.ContactSet) {
+func (c *Car) OnTrailerContacts(contact framework.ContactSet) {
 	if c.Trailer != nil {
-		c.Position.X += contacts[0].MoveOut.X
-		c.Position.Y += contacts[0].MoveOut.Y
+		c.Position.X += contact.MoveOut.X
+		c.Position.Y += contact.MoveOut.Y
 
 	}
 }

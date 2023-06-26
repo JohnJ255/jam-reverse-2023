@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"math"
 	"reverse-jam-2023/framework"
 )
@@ -9,7 +8,7 @@ import (
 type TowbarInterface interface {
 	GetPosition() framework.DirectionPosition
 	GetTowbarPosition() framework.Vec2
-	OnTrailerContacts(contacts []framework.ContactSet)
+	OnTrailerContacts(contact framework.ContactSet)
 }
 
 type TrailerType int
@@ -102,7 +101,6 @@ func (t *Trailer) followTraktor() {
 	t.Position.X = towbarPos.X - tlp.X
 	t.Position.Y = towbarPos.Y - tlp.Y
 	velocity := towbarPos.Sub(*t.prevTraktorPos)
-	fmt.Println("Trailer velocity", velocity)
 	t.Position.Angle = tlp.Add(velocity).ToRadian()
 	t.prevTraktorPos = &towbarPos
 }

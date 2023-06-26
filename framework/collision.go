@@ -13,6 +13,8 @@ type ICollisionOwner interface {
 	GetRotation() Radian
 	GetScale() Vec2
 	GetPivot() VecUV
+	SetPosition(pos Vec2)
+	SetRotation(rot Radian)
 }
 
 type ICollisionSizableOwner interface {
@@ -34,15 +36,33 @@ type ICollisionFigure interface {
 	GetOwner() ICollisionOwner
 }
 
+type Collide struct {
+	Collision *Collision
+	Contacts  []ContactSet
+}
+
+func NewCollide(collision *Collision, contacts []ContactSet) *Collide {
+	return &Collide{
+		Collision: collision,
+		Contacts:  contacts,
+	}
+}
+
 type Collision struct {
-	Figures []ICollisionFigure
-	entity  ICollisionOwner
+	Figures            []ICollisionFigure
+	BehaviourOnCollide func(collide *Collide)
+	entity             ICollisionOwner
+	f                  *Framework
 }
 
 func InitCollision(figure ICollisionFigure) *Collision {
-	return &Collision{
+	c := &Collision{
 		Figures: []ICollisionFigure{figure},
 	}
+
+	c.BehaviourOnCollide = c.OnCollide
+
+	return c
 }
 
 func (c *Collision) GetEntity() ICollisionOwner {
@@ -110,6 +130,40 @@ func (c *Collision) Intersect(collision *Collision) []ContactSet {
 		}
 	}
 	return res
+}
+
+func (c *Collision) OnCollide(collide *Collide) {
+	if c.GetEntity() == nil {
+		return
+	}
+	pos := c.GetEntity().GetPosition()
+	for _, cs := range collide.Contacts {
+		pos.X += cs.MoveOut.X
+		pos.Y += cs.MoveOut.Y
+	}
+	c.GetEntity().SetPosition(pos)
+}
+
+func (c *Collision) Start(f *Framework) {
+	c.f = f
+	f.RegisterCollision(c, c.GetEntity())
+}
+
+func (c *Collision) Update(dt float64) {
+	collides := make([]*Collide, 0)
+	for _, collision := range c.f.GetClosestCollisonsFor(c) {
+		cs := c.Intersect(collision)
+		if len(cs) > 0 && cs[0].MoveOut != nil {
+			collides = append(collides, NewCollide(collision, cs))
+		}
+	}
+	for _, collide := range collides {
+		func(collide *Collide) {
+			c.f.AddAfterUpdate(func() {
+				c.BehaviourOnCollide(collide)
+			})
+		}(collide)
+	}
 }
 
 type ContactSet struct {

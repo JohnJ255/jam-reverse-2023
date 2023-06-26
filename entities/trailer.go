@@ -49,8 +49,16 @@ func (t *TrailerEntity) GetPosition() framework.Vec2 {
 	return t.Trailer.Position.Vec2
 }
 
+func (t *TrailerEntity) SetPosition(pos framework.Vec2) {
+	t.Trailer.Position.Vec2 = pos
+}
+
 func (t *TrailerEntity) GetRotation() framework.Radian {
 	return t.Trailer.Position.Angle
+}
+
+func (t *TrailerEntity) SetRotation(r framework.Radian) {
+	t.Trailer.Position.Angle = r
 }
 
 func (t *TrailerEntity) GetScale() framework.Vec2 {

@@ -26,10 +26,12 @@ func NewTrailerCollision(obj framework.ICollisionComponentOwner) *TrailerCollisi
 		{0, 1},
 	}
 	box := framework.NewPolygonCollisionUV(points, obj.GetSize(), obj)
-	return &TrailerCollision{
+	tc := &TrailerCollision{
 		Component: framework.InitComponent(),
 		Collision: framework.InitCollision(box),
 	}
+	tc.Collision.BehaviourOnCollide = tc.OnCollide
+	return tc
 }
 
 func (c *TrailerCollision) SetOwner(obj framework.Updating) {
@@ -39,46 +41,47 @@ func (c *TrailerCollision) SetOwner(obj framework.Updating) {
 
 func (c *TrailerCollision) Start(f *framework.Framework) {
 	c.f = f
-	f.RegisterCollision(c.Collision, c.GetOwner().(*entities.TrailerEntity))
+	c.Collision.Start(f)
 }
 
-func (c *TrailerCollision) Update(_ float64) {
-	for _, collision := range c.f.GetClosestCollisonsFor(c.Collision) {
-		cs := c.Collision.Intersect(collision)
-		if len(cs) > 0 && cs[0].MoveOut != nil {
-			trailer := c.GetOwner().(*entities.TrailerEntity)
-			traktor := collision.GetEntity().(*entities.CarEntity)
-			if trailer.Trailer.Traktor != nil && trailer.Trailer.Traktor == traktor.Car {
-				c.onCollideWithTractor(trailer, cs)
-			} else {
-				c.OnCollide(trailer, cs)
-			}
+func (c *TrailerCollision) OnCollide(collide *framework.Collide) {
+	trailer := c.GetOwner().(*entities.TrailerEntity)
+	traktor := collide.Collision.GetEntity().(*entities.CarEntity)
+	for _, cs := range collide.Contacts {
+		if trailer.Trailer.Traktor != nil && trailer.Trailer.Traktor == traktor.Car {
+			c.onCollideWithTractor(trailer, cs)
+		} else {
+			c.OnCollideWithAny(trailer, cs)
 		}
 	}
 }
 
-func (c *TrailerCollision) onCollideWithTractor(trailer *entities.TrailerEntity, cs []framework.ContactSet) {
-	sign := framework.Radian(0.1)
-	if cs[0].MoveOut.ToRadian().LefterThan(trailer.Trailer.Position.Angle) {
-		sign = -0.1
+func (c *TrailerCollision) onCollideWithTractor(trailer *entities.TrailerEntity, cs framework.ContactSet) {
+	sign := framework.Radian(0.07)
+	if cs.MoveOut.ToRadian().LefterThan(trailer.Trailer.Position.Angle) {
+		sign = -0.07
 	}
 	trailer.Trailer.Position.Angle += sign
+
+	tlp := trailer.Trailer.GetTowbarLocalPosition()
+	towbarPos := trailer.Trailer.Traktor.GetTowbarPosition()
+	trailer.Trailer.Position.X = towbarPos.X - tlp.X
+	trailer.Trailer.Position.Y = towbarPos.Y - tlp.Y
 }
 
-func (c *TrailerCollision) OnCollide(trailer *entities.TrailerEntity, cs []framework.ContactSet) {
-	cts := cs[0]
-	if cts.MoveOut == nil {
+func (c *TrailerCollision) OnCollideWithAny(trailer *entities.TrailerEntity, cs framework.ContactSet) {
+	if cs.MoveOut == nil {
 		return
 	}
 	if trailer.Trailer.Traktor == nil {
 		sign := framework.Radian(0.01)
-		if trailer.Trailer.Position.Angle.LefterThan((*cts.MoveOut).ToRadian()) {
+		if trailer.Trailer.Position.Angle.LefterThan((*cs.MoveOut).ToRadian()) {
 			sign = -0.01
 		}
 		trailer.Trailer.Position.Angle += sign
 	}
-	trailer.Trailer.Position.X += cs[0].MoveOut.X
-	trailer.Trailer.Position.Y += cs[0].MoveOut.Y
+	trailer.Trailer.Position.X += cs.MoveOut.X
+	trailer.Trailer.Position.Y += cs.MoveOut.Y
 	if trailer.Trailer.Traktor != nil {
 		trailer.Trailer.Traktor.OnTrailerContacts(cs)
 	}
