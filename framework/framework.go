@@ -14,6 +14,7 @@ type Game interface {
 	Update(dt float64) error
 	Draw(screen *ebiten.Image)
 	SceneTransform(transforms *ebiten.DrawImageOptions) *ebiten.DrawImageOptions
+	DrawGUI(screen *ebiten.Image)
 }
 
 type IPhysicsEngine interface {
@@ -112,6 +113,8 @@ func (f *Framework) Draw(screen *ebiten.Image) {
 			screen.DrawImage(spr, f.game.SceneTransform(e.GetTransforms(1)))
 		}
 	}
+
+	f.game.DrawGUI(screen)
 
 	for _, drawer := range f.Debug.Draws {
 		drawer(screen)

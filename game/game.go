@@ -1,10 +1,16 @@
 package game
 
 import (
+	"fmt"
+	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/hajimehoshi/ebiten/v2/text"
 	"github.com/hajimehoshi/ebiten/v2/vector"
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/gofont/goregular"
 	"image/color"
+	"log"
 	"reverse-jam-2023/components"
 	"reverse-jam-2023/entities"
 	"reverse-jam-2023/framework"
@@ -17,15 +23,27 @@ type Game struct {
 	WindowSize framework.IntSize
 	scale      float64
 	f          *framework.Framework
+	fontGUI    font.Face
 }
 
 func NewGame() *Game {
+	ttf, err := truetype.Parse(goregular.TTF)
+	if err != nil {
+		log.Fatal(err)
+	}
+	faceOpt := &truetype.Options{
+		Size:    14,
+		DPI:     72,
+		Hinting: font.HintingFull,
+	}
+
 	g := &Game{
 		WindowSize: framework.IntSize{
 			Width:  800,
 			Height: 600,
 		},
-		scale: 0.1,
+		scale:   0.1,
+		fontGUI: truetype.NewFace(ttf, faceOpt),
 	}
 	g.level = NewLevel(1, g)
 
@@ -105,6 +123,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	if g.level != nil {
 		screen.DrawImage(g.level.GetSprite(), g.SceneTransform(g.level.GetTransforms(1)))
 	}
+}
+
+func (g *Game) DrawGUI(screen *ebiten.Image) {
+	text.Draw(screen, g.level.name, g.fontGUI, 300, 15, color.White)
+	text.Draw(screen, fmt.Sprintf("Score: %d", g.level.Score), g.fontGUI, 400, 15, color.White)
 }
 
 func (g *Game) GetTitle() string {

@@ -21,6 +21,7 @@ type Level struct {
 	camera    framework.ICamera
 	framework *framework.Framework
 	entities  []framework.Entity
+	Score     int
 }
 
 func NewLevel(index int, g *Game) *Level {
@@ -31,17 +32,14 @@ func NewLevel(index int, g *Game) *Level {
 		index:    index,
 		entities: make([]framework.Entity, 0),
 	}
-	level.name = level.makeName(index)
 	level.camera = framework.NewFollowCamera(level.size.Sub(g.WindowSize.AsVec2()), level.Sprite)
-	level.LoadResources(&loader.ResourceLoader{}, loader.LevelFileNames[index])
 
 	return level
 }
 
 func (l *Level) Init(f *framework.Framework) {
 	l.framework = f
-	f.FlushCollisions()
-	l.Fill()
+	l.Change(f, l.index)
 }
 
 func (l *Level) GetPlayer() framework.Entity {
@@ -66,6 +64,7 @@ func (l *Level) Change(f *framework.Framework, index int) {
 	}
 	f.FlushCollisions()
 
+	l.Score = 1000
 	l.Sprite.Imgs = make([]*ebiten.Image, 0)
 	l.LoadResources(&loader.ResourceLoader{}, loader.LevelFileNames[index])
 	l.index = index
