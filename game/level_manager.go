@@ -65,6 +65,10 @@ func (l *LevelManager) Change(f *framework.Framework, index int) {
 		f.RemoveEntity(entity)
 	}
 	f.FlushCollisions()
+	if l.index < index {
+		f.Audio.SetVolume("win", 0.2)
+		f.Audio.PlayOnce("win")
+	}
 
 	l.Score += NewLevelScore
 	l.Sprite.Imgs = make([]*ebiten.Image, 0)

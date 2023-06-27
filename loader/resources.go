@@ -61,3 +61,11 @@ var LevelFileNames = map[int]*ImageResource{
 		},
 	},
 }
+
+var SoundsFilenames = map[string]string{
+	"background": "background1.mp3",
+	"forward":    "forward.mp3",
+	"reverse":    "reverse.mp3",
+	"win":        "finish_level.mp3",
+	"collide":    "collide.mp3",
+}

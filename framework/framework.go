@@ -36,6 +36,7 @@ type Framework struct {
 	afterUpdates []func()
 	physic       IPhysicsEngine
 	Events       *EventSystem
+	Audio        *AudioPlayer
 }
 
 var fw *Framework
@@ -103,6 +104,8 @@ func (f *Framework) Update() error {
 		afterUpdate()
 	}
 	f.afterUpdates = make([]func(), 0, len(f.afterUpdates))
+
+	f.Audio.Update()
 
 	return f.game.Update(dt)
 }

@@ -15,6 +15,7 @@ type PlayerCarControl struct {
 	*framework.Component
 	levelSize framework.Size
 	scores    IScoreManager
+	f         *framework.Framework
 }
 
 func (c *PlayerCarControl) GetName() string {
@@ -41,6 +42,15 @@ func (c *PlayerCarControl) Start(f *framework.Framework) {
 		defaultFunc(collide)
 		c.OnCollide(collide)
 	}
+	c.f = f
+	f.Audio.SetVolume("forward", 0.1)
+	f.Audio.SetVolume("reverse", 0.1)
+	f.Events.AddListener("Forward", func(event *framework.Event) {
+		f.Audio.PlayMany("forward", 600)
+	})
+	f.Events.AddListener("Reverse", func(event *framework.Event) {
+		f.Audio.PlayMany("forward", 500)
+	})
 }
 
 func (c *PlayerCarControl) Update(dt float64) {
@@ -54,12 +64,18 @@ func (c *PlayerCarControl) Update(dt float64) {
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyUp) {
 		accelerate = 1.0
+		c.f.Events.Dispatch(&framework.Event{
+			Name: "Forward",
+		})
 	} else if ebiten.IsKeyPressed(ebiten.KeyDown) {
 		accelerate = -0.3
+		c.f.Events.Dispatch(&framework.Event{
+			Name: "Reverse",
+		})
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyR) {
-		entity.Car.TowbarToggle()
-	}
+	//if ebiten.IsKeyPressed(ebiten.KeyR) {
+	//	entity.Car.TowbarToggle()
+	//}
 
 	entity.Car.Control(accelerate, wheel)
 

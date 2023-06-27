@@ -14,6 +14,7 @@ import (
 	"reverse-jam-2023/components"
 	"reverse-jam-2023/entities"
 	"reverse-jam-2023/framework"
+	"reverse-jam-2023/loader"
 	"reverse-jam-2023/models"
 	"strconv"
 )
@@ -51,9 +52,17 @@ func NewGame() *Game {
 }
 
 func (g *Game) Start(f *framework.Framework) {
+	f.Audio = framework.NewAudioPlayer(&loader.ResourceLoader{})
 	f.DebugModeEnable()
 	g.level.Init(f)
 	g.f = f
+
+	f.Audio.SetVolume("background", 0.2)
+	f.Audio.SetVolume("collide", 0.2)
+	f.Audio.Loop("background")
+	g.f.Events.AddListener("Collision", func(event *framework.Event) {
+		f.Audio.PlayMany("collide", 200)
+	})
 
 	f.SetConsoleCommand("trailer", func(params ...string) string {
 		p := g.level.GetPlayer()
@@ -113,6 +122,10 @@ func (g *Game) Start(f *framework.Framework) {
 func (g *Game) Update(dt float64) error {
 	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
 		g.level.Change(g.f, g.level.index+1)
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyR) {
+		g.level.Change(g.f, g.level.index)
+		g.level.Score -= NewLevelScore
 	}
 
 	g.level.Update(dt)

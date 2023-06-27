@@ -132,6 +132,13 @@ func (c *Collision) Intersect(collision *Collision) []ContactSet {
 func (c *Collision) OnCollide(collide *Collide) {
 	if po, ok := c.GetEntity().(IPhysicsObject); ok {
 		c.f.physic.ProcessingCollide(po, collide)
+		c.f.Events.Dispatch(&Event{
+			Name: "Collision",
+			Data: map[string]interface{}{
+				"collision": c,
+				"collide":   collide,
+			},
+		})
 	}
 	if to, ok := collide.Collision.GetEntity().(ITriggerObject); ok {
 		to.OnTrigger(c.GetEntity(), collide)
