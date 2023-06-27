@@ -34,4 +34,8 @@ func (l *Level1) Fill(level *Level) {
 	xcar := entities.NewCar(framework.Computer, xmcar)
 	xcar.AddComponent(components.NewCarCollision(xcar))
 	level.AddEntity(xcar)
+
+	wall := entities.NewWall(framework.Vec2{100, 100}, framework.Size{100, 10})
+	wall.AddComponent(components.NewFixedCollision(wall))
+	level.AddEntity(wall)
 }

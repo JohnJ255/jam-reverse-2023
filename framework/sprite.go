@@ -46,7 +46,10 @@ func (b *Sprite) GetSprite() *ebiten.Image {
 }
 
 func (b *Sprite) getBaseSprite() *ebiten.Image {
-	return b.Imgs[b.CurrentImgIndex]
+	if b.Visible {
+		return b.Imgs[b.CurrentImgIndex]
+	}
+	return nil
 }
 
 func (b *Sprite) PivotTransform(scale float64, pivot VecUV) *ebiten.DrawImageOptions {

@@ -107,7 +107,10 @@ func (f *Framework) Update() error {
 func (f *Framework) Draw(screen *ebiten.Image) {
 	f.game.Draw(screen)
 	for _, e := range f.entities {
-		screen.DrawImage(e.GetSprite(), f.game.SceneTransform(e.GetTransforms(1)))
+		spr := e.GetSprite()
+		if spr != nil {
+			screen.DrawImage(spr, f.game.SceneTransform(e.GetTransforms(1)))
+		}
 	}
 
 	for _, drawer := range f.Debug.Draws {
