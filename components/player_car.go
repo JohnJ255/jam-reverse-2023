@@ -6,23 +6,35 @@ import (
 	"reverse-jam-2023/framework"
 )
 
+type IScoreManager interface {
+	AddScore(score int)
+}
+
 type PlayerCarControl struct {
 	*framework.Component
 	levelSize framework.Size
+	scores    IScoreManager
 }
 
 func (c *PlayerCarControl) GetName() string {
 	return "PlayerCarControl"
 }
 
-func NewPlayerCarControl(levelSize framework.Size) *PlayerCarControl {
+func NewPlayerCarControl(levelSize framework.Size, scores IScoreManager) *PlayerCarControl {
 	return &PlayerCarControl{
 		levelSize: levelSize,
 		Component: framework.InitComponent(),
+		scores:    scores,
 	}
 }
 
 func (c *PlayerCarControl) Start(f *framework.Framework) {
+	cc := c.GetOwner().(*entities.CarEntity).GetComponent("CarCollision").(*CarCollision)
+	defaultFunc := cc.BehaviourOnCollide
+	cc.BehaviourOnCollide = func(collide *framework.Collide) {
+		defaultFunc(collide)
+		c.OnCollide(collide)
+	}
 }
 
 func (c *PlayerCarControl) Update(dt float64) {
@@ -47,4 +59,10 @@ func (c *PlayerCarControl) Update(dt float64) {
 
 	entity.Car.Position.X = framework.Limited(entity.Car.Position.X, 0, c.levelSize.Length)
 	entity.Car.Position.Y = framework.Limited(entity.Car.Position.Y, 0, c.levelSize.Height)
+}
+
+func (c *PlayerCarControl) OnCollide(collide *framework.Collide) {
+	if _, ok := collide.Collision.GetEntity().(framework.IPhysicsObject); ok {
+		c.scores.AddScore(-1)
+	}
 }

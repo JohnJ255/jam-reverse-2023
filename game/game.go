@@ -19,7 +19,7 @@ import (
 )
 
 type Game struct {
-	level      *Level
+	level      *LevelManager
 	WindowSize framework.IntSize
 	scale      float64
 	f          *framework.Framework

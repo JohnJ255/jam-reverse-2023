@@ -13,10 +13,10 @@ type Level1 struct {
 
 const WallWidth = 15
 
-func (l *Level1) Fill(level *Level) {
+func (l *Level1) Fill(level *LevelManager) {
 	car := models.NewSportCar(0)
 	playerCar := entities.NewCar(framework.Player, car)
-	playerCar.AddComponent(components.NewPlayerCarControl(level.size))
+	playerCar.AddComponent(components.NewPlayerCarControl(level.size, level))
 	playerCar.AddComponent(components.NewCarCollision(playerCar))
 	level.player = playerCar
 	level.AddEntity(playerCar)

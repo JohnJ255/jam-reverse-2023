@@ -11,10 +11,10 @@ import (
 type Level3 struct {
 }
 
-func (l *Level3) Fill(level *Level) {
+func (l *Level3) Fill(level *LevelManager) {
 	car := models.NewSportCar(0)
 	playerCar := entities.NewCar(framework.Player, car)
-	playerCar.AddComponent(components.NewPlayerCarControl(level.size))
+	playerCar.AddComponent(components.NewPlayerCarControl(level.size, level))
 	playerCar.AddComponent(components.NewCarCollision(playerCar))
 	level.player = playerCar
 	level.AddEntity(playerCar)
