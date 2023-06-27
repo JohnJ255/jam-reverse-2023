@@ -4,8 +4,12 @@ import (
 	"math"
 )
 
+type ITriggerObject interface {
+	OnTrigger(entity ICollisionOwner, collide *Collide)
+}
+
 type ICollisionOwner interface {
-	IPhysicsObject
+	IPositioning
 	GetScale() Vec2
 	GetPivot() VecUV
 }
@@ -126,7 +130,12 @@ func (c *Collision) Intersect(collision *Collision) []ContactSet {
 }
 
 func (c *Collision) OnCollide(collide *Collide) {
-	c.f.physic.ProcessingCollide(c.GetEntity(), collide)
+	if po, ok := c.GetEntity().(IPhysicsObject); ok {
+		c.f.physic.ProcessingCollide(po, collide)
+	}
+	if to, ok := collide.Collision.GetEntity().(ITriggerObject); ok {
+		to.OnTrigger(c.GetEntity(), collide)
+	}
 }
 
 func (c *Collision) Start(f *Framework) {

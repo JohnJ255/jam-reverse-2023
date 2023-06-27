@@ -1,6 +1,7 @@
 package game
 
 import (
+	"math"
 	"reverse-jam-2023/components"
 	"reverse-jam-2023/entities"
 	"reverse-jam-2023/framework"
@@ -20,20 +21,46 @@ func (l *Level2) Fill(level *Level) {
 
 	player := level.player
 
-	player.Car.Position.X = 200
-	player.Car.Position.Y = 300
-	player.Car.Position.Angle = framework.Degrees(25).ToRadians()
-
-	trailer1 := entities.NewTrailerToBackOfTractor(player.Car, player.Car.Size, 100, models.TrailerType(1))
-	trailer1.AddComponent(components.NewTrailerCollision(trailer1))
-	level.AddEntity(trailer1)
-
-	player.Car.ConnectTrailer(trailer1.Trailer)
+	player.Car.Position.X = 330
+	player.Car.Position.Y = 350
+	player.Car.Position.Angle = math.Pi / 2
 
 	xmcar := models.NewSportCar(framework.Degrees(90))
-	xmcar.Position.X = 400
-	xmcar.Position.Y = 300
+	xmcar.Position.X = 200
+	xmcar.Position.Y = 330
 	xcar := entities.NewCar(framework.Computer, xmcar)
 	xcar.AddComponent(components.NewCarCollision(xcar))
 	level.AddEntity(xcar)
+
+	wall := entities.NewWall(framework.Vec2{114, 200}, framework.Size{128, WallWidth})
+	wall.AddComponent(components.NewFixedCollision(wall))
+	level.AddEntity(wall)
+	wall = entities.NewWall(framework.Vec2{114, 285}, framework.Size{128, WallWidth})
+	wall.AddComponent(components.NewFixedCollision(wall))
+	level.AddEntity(wall)
+	wall = entities.NewWall(framework.Vec2{114, 200}, framework.Size{WallWidth, 85})
+	wall.AddComponent(components.NewFixedCollision(wall))
+	level.AddEntity(wall)
+
+	wall = entities.NewWall(framework.Vec2{50, 75}, framework.Size{700, WallWidth})
+	wall.AddComponent(components.NewFixedCollision(wall))
+	level.AddEntity(wall)
+	wall = entities.NewWall(framework.Vec2{50, 705}, framework.Size{700, WallWidth})
+	wall.AddComponent(components.NewFixedCollision(wall))
+	level.AddEntity(wall)
+	wall = entities.NewWall(framework.Vec2{45, 75}, framework.Size{WallWidth, 705})
+	wall.AddComponent(components.NewFixedCollision(wall))
+	level.AddEntity(wall)
+	wall = entities.NewWall(framework.Vec2{750, 75}, framework.Size{WallWidth, 705})
+	wall.AddComponent(components.NewFixedCollision(wall))
+	level.AddEntity(wall)
+
+	trigger := entities.NewTrigger(framework.Vec2{125, 220}, framework.Size{15, 60},
+		func(entity framework.ICollisionOwner, collide *framework.Collide) {
+			if car, ok := entity.(*entities.CarEntity); ok && math.Abs(float64(car.GetRotation())) < math.Pi/4 {
+				level.Change(level.framework, level.index+1)
+			}
+		})
+	trigger.AddComponent(components.NewFixedCollision(trigger))
+	level.AddEntity(trigger)
 }

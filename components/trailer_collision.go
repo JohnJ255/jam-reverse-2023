@@ -46,9 +46,13 @@ func (c *TrailerCollision) Start(f *framework.Framework) {
 
 func (c *TrailerCollision) OnCollide(collide *framework.Collide) {
 	trailer := c.GetOwner().(*entities.TrailerEntity)
-	traktor := collide.Collision.GetEntity().(*entities.CarEntity)
+	var traktor *entities.CarEntity
+	traktor, ok := collide.Collision.GetEntity().(*entities.CarEntity)
+	if !ok {
+		traktor = nil
+	}
 	for _, cs := range collide.Contacts {
-		if trailer.Trailer.Traktor != nil && trailer.Trailer.Traktor == traktor.Car {
+		if traktor != nil && trailer.Trailer.Traktor != nil && trailer.Trailer.Traktor == traktor.Car {
 			c.onCollideWithTractor(trailer, cs)
 		} else {
 			c.Collision.OnCollide(collide)
@@ -57,6 +61,7 @@ func (c *TrailerCollision) OnCollide(collide *framework.Collide) {
 			}
 		}
 	}
+
 }
 
 func (c *TrailerCollision) onCollideWithTractor(trailer *entities.TrailerEntity, cs framework.ContactSet) {
