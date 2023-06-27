@@ -9,7 +9,7 @@ type ResourceLoader struct {
 }
 
 func (r *ResourceLoader) GetSprite(filename string) *ebiten.Image {
-	path := "images/"
+	path := "misc/"
 
 	img, _, err := ebitenutil.NewImageFromFile(path + filename)
 	if err != nil {
