@@ -24,7 +24,7 @@ type Level struct {
 }
 
 func NewLevel(index int, g *Game) *Level {
-	bgSize := framework.Size{1200, 600}
+	bgSize := framework.Size{800, 800}
 	level := &Level{
 		Sprite:   framework.InitSprites(bgSize),
 		size:     bgSize,
@@ -66,7 +66,9 @@ func (l *Level) Change(f *framework.Framework, index int) {
 	}
 	f.FlushCollisions()
 
+	l.Sprite.Imgs = make([]*ebiten.Image, 0)
 	l.LoadResources(&loader.ResourceLoader{}, loader.LevelFileNames[index])
+	l.index = index
 	l.name = l.makeName(index)
 	l.Fill()
 }
@@ -88,7 +90,17 @@ func (l *Level) Fill() {
 		levelFiller = &Level1{}
 	case "level 2":
 		levelFiller = &Level2{}
+	case "level 3":
+		levelFiller = &Level3{}
+	case "level 4":
+		levelFiller = &Level4{}
+	case "level 5":
+		levelFiller = &Level5{}
 	}
 
 	levelFiller.Fill(l)
+}
+
+func (l *Level) GetName() string {
+	return l.name
 }
