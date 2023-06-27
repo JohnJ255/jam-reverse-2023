@@ -16,30 +16,32 @@ import (
 )
 
 type Console struct {
-	ToggleKey   ebiten.Key
-	Text        string
-	IsAvailable bool
-	IsOpened    bool
-	inputText   string
-	Padding     [4]int
-	commands    map[string]func(params ...string) string
-	watch       map[string]func() string
-	Background  color.Color
-	Foreground  color.Color
+	ToggleKey                  ebiten.Key
+	Text                       string
+	IsAvailable                bool
+	IsOpened                   bool
+	inputText                  string
+	Padding                    [4]int
+	commands                   map[string]func(params ...string) string
+	watch                      map[string]func() string
+	Background                 color.Color
+	Foreground                 color.Color
+	IsEnabledDetectMouseClicks bool
 }
 
 func NewConsole() *Console {
 	return &Console{
-		ToggleKey:   ebiten.KeyBackquote,
-		Text:        "",
-		IsAvailable: false,
-		IsOpened:    false,
-		inputText:   "",
-		commands:    make(map[string]func(params ...string) string),
-		watch:       make(map[string]func() string),
-		Padding:     [4]int{10, 10, 10, 10},
-		Background:  color.NRGBA{100, 100, 100, 220},
-		Foreground:  color.NRGBA{220, 220, 220, 255},
+		ToggleKey:                  ebiten.KeyBackquote,
+		Text:                       "",
+		IsAvailable:                false,
+		IsOpened:                   false,
+		inputText:                  "",
+		commands:                   make(map[string]func(params ...string) string),
+		watch:                      make(map[string]func() string),
+		Padding:                    [4]int{10, 10, 10, 10},
+		Background:                 color.NRGBA{100, 100, 100, 220},
+		Foreground:                 color.NRGBA{220, 220, 220, 255},
+		IsEnabledDetectMouseClicks: true,
 	}
 }
 
@@ -97,6 +99,10 @@ func (c *Console) Update(f *Framework) {
 		c.Println(c.inputText)
 		c.makeCommand(cmd[0], cmd[1:]...)
 		c.inputText = ""
+	}
+	if c.IsEnabledDetectMouseClicks && inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+		x, y := ebiten.CursorPosition()
+		c.Println(fmt.Sprintf("x: %d, y: %d", x, y))
 	}
 }
 
