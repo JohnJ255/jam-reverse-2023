@@ -9,10 +9,10 @@ import (
 )
 
 type ILevelFillter interface {
-	Fill(level *Level)
+	Fill(level *LevelManager)
 }
 
-type Level struct {
+type LevelManager struct {
 	*framework.Sprite
 	index     int
 	name      string
@@ -24,9 +24,9 @@ type Level struct {
 	Score     int
 }
 
-func NewLevel(index int, g *Game) *Level {
+func NewLevel(index int, g *Game) *LevelManager {
 	bgSize := framework.Size{800, 800}
-	level := &Level{
+	level := &LevelManager{
 		Sprite:   framework.InitSprites(bgSize),
 		size:     bgSize,
 		index:    index,
@@ -37,28 +37,28 @@ func NewLevel(index int, g *Game) *Level {
 	return level
 }
 
-func (l *Level) Init(f *framework.Framework) {
+func (l *LevelManager) Init(f *framework.Framework) {
 	l.framework = f
 	l.Change(f, l.index)
 }
 
-func (l *Level) GetPlayer() framework.Entity {
+func (l *LevelManager) GetPlayer() framework.Entity {
 	return l.player
 }
 
-func (l *Level) Update(dt float64) {
+func (l *LevelManager) Update(dt float64) {
 	l.camera.Control(l.player)
 }
 
-func (l *Level) GetSize() framework.Size {
+func (l *LevelManager) GetSize() framework.Size {
 	return l.size
 }
 
-func (l *Level) GetTransforms(scale float64) *ebiten.DrawImageOptions {
+func (l *LevelManager) GetTransforms(scale float64) *ebiten.DrawImageOptions {
 	return l.Sprite.PivotTransform(scale, framework.VecUV{})
 }
 
-func (l *Level) Change(f *framework.Framework, index int) {
+func (l *LevelManager) Change(f *framework.Framework, index int) {
 	for _, entity := range l.entities {
 		f.RemoveEntity(entity)
 	}
@@ -72,16 +72,16 @@ func (l *Level) Change(f *framework.Framework, index int) {
 	l.Fill()
 }
 
-func (l *Level) AddEntity(entity framework.Entity) {
+func (l *LevelManager) AddEntity(entity framework.Entity) {
 	l.entities = append(l.entities, entity)
 	l.framework.AddEntity(entity)
 }
 
-func (l *Level) makeName(index int) string {
+func (l *LevelManager) makeName(index int) string {
 	return "level " + strconv.Itoa(index)
 }
 
-func (l *Level) Fill() {
+func (l *LevelManager) Fill() {
 	var levelFiller ILevelFillter
 
 	switch l.name {
@@ -100,6 +100,10 @@ func (l *Level) Fill() {
 	levelFiller.Fill(l)
 }
 
-func (l *Level) GetName() string {
+func (l *LevelManager) GetName() string {
 	return l.name
+}
+
+func (l *LevelManager) AddScore(score int) {
+	l.Score += score
 }
