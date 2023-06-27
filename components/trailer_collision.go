@@ -58,6 +58,13 @@ func (c *TrailerCollision) OnCollide(collide *framework.Collide) {
 			c.Collision.OnCollide(collide)
 			if trailer.Trailer.Traktor != nil {
 				trailer.Trailer.Traktor.OnTrailerContacts(cs)
+				c.f.Events.Dispatch(&framework.Event{
+					Name: "TrailerCollision",
+					Data: map[string]interface{}{
+						"traktor": trailer.Trailer.Traktor,
+						"collide": collide,
+					},
+				})
 			}
 		}
 	}

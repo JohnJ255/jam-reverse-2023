@@ -8,6 +8,8 @@ import (
 	"strconv"
 )
 
+const NewLevelScore = 1000
+
 type ILevelFillter interface {
 	Fill(level *LevelManager)
 }
@@ -64,7 +66,7 @@ func (l *LevelManager) Change(f *framework.Framework, index int) {
 	}
 	f.FlushCollisions()
 
-	l.Score = 1000
+	l.Score += NewLevelScore
 	l.Sprite.Imgs = make([]*ebiten.Image, 0)
 	l.LoadResources(&loader.ResourceLoader{}, loader.LevelFileNames[index])
 	l.index = index

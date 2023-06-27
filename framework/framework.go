@@ -35,6 +35,7 @@ type Framework struct {
 	WorldStarted bool
 	afterUpdates []func()
 	physic       IPhysicsEngine
+	Events       *EventSystem
 }
 
 var fw *Framework
@@ -51,6 +52,7 @@ func InitWindowGame(g Game, windowWidth, windowHeight int, windowTitle string) *
 		console:      NewConsole(),
 		collisions:   make([]*Collision, 0),
 		physic:       &PhysicTop{},
+		Events:       NewEventSystem(),
 	}
 	fw.Debug = NewDebugTool(fw, &DefaultCollisionPainter{
 		color: color.NRGBA{40, 255, 40, 255},

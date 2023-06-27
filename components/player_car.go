@@ -4,6 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"reverse-jam-2023/entities"
 	"reverse-jam-2023/framework"
+	"reverse-jam-2023/models"
 )
 
 type IScoreManager interface {
@@ -31,6 +32,11 @@ func NewPlayerCarControl(levelSize framework.Size, scores IScoreManager) *Player
 func (c *PlayerCarControl) Start(f *framework.Framework) {
 	cc := c.GetOwner().(*entities.CarEntity).GetComponent("CarCollision").(*CarCollision)
 	defaultFunc := cc.BehaviourOnCollide
+	f.Events.AddListener("TrailerCollision", func(event *framework.Event) {
+		if c.isPlayersTrailerCollided(event.Data) {
+			c.OnCollide(event.Data["collide"].(*framework.Collide))
+		}
+	})
 	cc.BehaviourOnCollide = func(collide *framework.Collide) {
 		defaultFunc(collide)
 		c.OnCollide(collide)
@@ -65,4 +71,12 @@ func (c *PlayerCarControl) OnCollide(collide *framework.Collide) {
 	if _, ok := collide.Collision.GetEntity().(framework.IPhysicsObject); ok {
 		c.scores.AddScore(-1)
 	}
+}
+
+func (c *PlayerCarControl) isPlayersTrailerCollided(data map[string]interface{}) bool {
+	if mtr, ok := data["traktor"].(*models.Car); ok {
+		pcar := c.GetOwner().(*entities.CarEntity)
+		return pcar.Car == mtr
+	}
+	return false
 }
