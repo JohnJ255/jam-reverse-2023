@@ -49,3 +49,12 @@ func (r *ResourceLoader) GetSound(name string, audioContext *audio.Context) *aud
 
 	return player
 }
+
+func (r *ResourceLoader) GetSoundList() []string {
+	res := make([]string, 0, len(SoundsFilenames))
+	for name := range SoundsFilenames {
+		res = append(res, name)
+	}
+
+	return res
+}

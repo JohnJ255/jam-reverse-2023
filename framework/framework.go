@@ -15,6 +15,7 @@ type Game interface {
 	Draw(screen *ebiten.Image)
 	SceneTransform(transforms *ebiten.DrawImageOptions) *ebiten.DrawImageOptions
 	DrawGUI(screen *ebiten.Image)
+	IsPaused() bool
 }
 
 type IPhysicsEngine interface {
@@ -96,6 +97,12 @@ func (f *Framework) Update() error {
 		return nil
 	}
 
+	err := f.game.Update(dt)
+
+	if f.game.IsPaused() {
+		return err
+	}
+
 	for _, e := range entities {
 		e.Update(dt)
 	}
@@ -107,7 +114,7 @@ func (f *Framework) Update() error {
 
 	f.Audio.Update()
 
-	return f.game.Update(dt)
+	return err
 }
 
 func (f *Framework) Draw(screen *ebiten.Image) {

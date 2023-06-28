@@ -9,6 +9,7 @@ const sampleRate = 44100
 
 type IAudioResourceLoader interface {
 	GetSound(filename string, audioContext *audio.Context) *audio.Player
+	GetSoundList() []string
 }
 
 type AudioPlayer struct {
@@ -20,13 +21,15 @@ type AudioPlayer struct {
 }
 
 func NewAudioPlayer(loader IAudioResourceLoader) *AudioPlayer {
-	return &AudioPlayer{
+	a := &AudioPlayer{
 		audioContext: audio.NewContext(sampleRate),
 		sounds:       make(map[string]*audio.Player),
 		loop:         make([]*audio.Player, 0),
 		loader:       loader,
 		freq:         make(map[string]int64),
 	}
+	a.preload()
+	return a
 }
 
 func (a *AudioPlayer) Play(name string) {
@@ -94,4 +97,16 @@ func (a *AudioPlayer) SetVolume(name string, volume float64) {
 		a.sounds[name] = a.loader.GetSound(name, a.audioContext)
 	}
 	a.sounds[name].SetVolume(volume)
+}
+
+func (a *AudioPlayer) preload() {
+	for _, name := range a.loader.GetSoundList() {
+		a.sounds[name] = a.loader.GetSound(name, a.audioContext)
+	}
+}
+
+func (a *AudioPlayer) SetMasterVolume(volume float64) {
+	for _, player := range a.sounds {
+		player.SetVolume(volume)
+	}
 }

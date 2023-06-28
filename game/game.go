@@ -20,11 +20,14 @@ import (
 )
 
 type Game struct {
-	level      *LevelManager
-	WindowSize framework.IntSize
-	scale      float64
-	f          *framework.Framework
-	fontGUI    font.Face
+	level             *LevelManager
+	WindowSize        framework.IntSize
+	scale             float64
+	f                 *framework.Framework
+	fontGUI           font.Face
+	menu              *Menu
+	SoundMasterVolume float64
+	Name              string
 }
 
 func NewGame() *Game {
@@ -39,26 +42,29 @@ func NewGame() *Game {
 	}
 
 	g := &Game{
+		Name: "Reverse Car",
 		WindowSize: framework.IntSize{
 			Width:  800,
 			Height: 600,
 		},
-		scale:   0.1,
-		fontGUI: truetype.NewFace(ttf, faceOpt),
+		scale:             0.1,
+		fontGUI:           truetype.NewFace(ttf, faceOpt),
+		SoundMasterVolume: 1,
 	}
-	g.level = NewLevel(1, g)
+	g.menu = NewMenu(g)
+	g.menu.IsOpened = true
+	g.level = NewLevel(0, g)
 
 	return g
 }
 
 func (g *Game) Start(f *framework.Framework) {
 	f.Audio = framework.NewAudioPlayer(&loader.ResourceLoader{})
-	f.DebugModeEnable()
+	//f.DebugModeEnable()
+	f.Audio.SetMasterVolume(g.SoundMasterVolume)
 	g.level.Init(f)
 	g.f = f
 
-	f.Audio.SetVolume("background", 0.2)
-	f.Audio.SetVolume("collide", 0.2)
 	f.Audio.Loop("background")
 	g.f.Events.AddListener("Collision", func(event *framework.Event) {
 		f.Audio.PlayMany("collide", 200)
@@ -127,20 +133,35 @@ func (g *Game) Update(dt float64) error {
 		g.level.Change(g.f, g.level.index)
 		g.level.Score -= NewLevelScore
 	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+		g.menu.IsOpened = !g.menu.IsOpened
+	}
+	if g.menu.IsOpened {
+		g.menu.Update()
+		return nil
+	}
 
 	g.level.Update(dt)
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	if g.level != nil {
+	if g.level != nil && g.level.index > 0 {
 		screen.DrawImage(g.level.GetSprite(), g.SceneTransform(g.level.GetTransforms(1)))
 	}
 }
 
 func (g *Game) DrawGUI(screen *ebiten.Image) {
-	text.Draw(screen, g.level.name, g.fontGUI, 300, 15, color.White)
-	text.Draw(screen, fmt.Sprintf("Score: %d", g.level.Score), g.fontGUI, 400, 15, color.White)
+	if g.level.index > 0 {
+		if g.level.index != LastLevelIndex {
+			text.Draw(screen, g.level.name, g.fontGUI, 300, 15, color.White)
+		}
+		text.Draw(screen, fmt.Sprintf("Score: %d", g.level.Score), g.fontGUI, 400, 15, color.White)
+	}
+
+	if g.menu.IsOpened {
+		g.menu.Draw(screen)
+	}
 }
 
 func (g *Game) GetTitle() string {
@@ -153,4 +174,8 @@ func (g *Game) SceneTransform(transforms *ebiten.DrawImageOptions) *ebiten.DrawI
 	transforms.GeoM.Translate(-pos.X, -pos.Y)
 
 	return transforms
+}
+
+func (g *Game) IsPaused() bool {
+	return g.menu.IsOpened
 }
