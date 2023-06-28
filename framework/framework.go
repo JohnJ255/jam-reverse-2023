@@ -2,6 +2,7 @@ package framework
 
 import (
 	"fmt"
+	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"image/color"
@@ -42,7 +43,7 @@ type Framework struct {
 
 var fw *Framework
 
-func InitWindowGame(g Game, windowWidth, windowHeight int, windowTitle string) *Framework {
+func InitWindowGame(g Game, windowWidth, windowHeight int, windowTitle string, ttf *truetype.Font) *Framework {
 	ebiten.SetWindowSize(windowWidth, windowHeight)
 	ebiten.SetWindowTitle(windowTitle)
 	fw = &Framework{
@@ -51,7 +52,7 @@ func InitWindowGame(g Game, windowWidth, windowHeight int, windowTitle string) *
 		windowWidth:  windowWidth,
 		windowHeight: windowHeight,
 		windowTitle:  windowTitle,
-		console:      NewConsole(),
+		console:      NewConsole(ttf),
 		collisions:   make([]*Collision, 0),
 		physic:       &PhysicTop{},
 		Events:       NewEventSystem(),

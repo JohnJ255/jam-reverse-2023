@@ -8,9 +8,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/text"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"golang.org/x/image/font"
-	"golang.org/x/image/font/gofont/goregular"
 	"image/color"
-	"log"
 	"reverse-jam-2023/components"
 	"reverse-jam-2023/entities"
 	"reverse-jam-2023/framework"
@@ -30,11 +28,7 @@ type Game struct {
 	Name              string
 }
 
-func NewGame() *Game {
-	ttf, err := truetype.Parse(goregular.TTF)
-	if err != nil {
-		log.Fatal(err)
-	}
+func NewGame(ttf *truetype.Font) *Game {
 	faceOpt := &truetype.Options{
 		Size:    14,
 		DPI:     72,
@@ -49,7 +43,7 @@ func NewGame() *Game {
 		},
 		scale:             0.1,
 		fontGUI:           truetype.NewFace(ttf, faceOpt),
-		SoundMasterVolume: 1,
+		SoundMasterVolume: 0.3,
 	}
 	g.menu = NewMenu(g)
 	g.menu.IsOpened = true

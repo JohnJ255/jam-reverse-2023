@@ -8,9 +8,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/text"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 	"golang.org/x/image/font"
-	"golang.org/x/image/font/gofont/goregular"
 	"image/color"
-	"log"
 	"reverse-jam-2023/helper"
 	"strings"
 )
@@ -27,9 +25,10 @@ type Console struct {
 	Background                 color.Color
 	Foreground                 color.Color
 	IsEnabledDetectMouseClicks bool
+	fontTTF                    *truetype.Font
 }
 
-func NewConsole() *Console {
+func NewConsole(fontTTF *truetype.Font) *Console {
 	return &Console{
 		ToggleKey:                  ebiten.KeyBackquote,
 		Text:                       "",
@@ -42,6 +41,7 @@ func NewConsole() *Console {
 		Background:                 color.NRGBA{100, 100, 100, 220},
 		Foreground:                 color.NRGBA{220, 220, 220, 255},
 		IsEnabledDetectMouseClicks: true,
+		fontTTF:                    fontTTF,
 	}
 }
 
@@ -51,16 +51,12 @@ func (c *Console) Toggle() {
 
 func (c *Console) Draw(screen *ebiten.Image, fromX, fromY, toX, toY int) {
 	vector.DrawFilledRect(screen, float32(fromX), float32(fromY), float32(toX), float32(toY), c.Background, false)
-	ttf, err := truetype.Parse(goregular.TTF)
-	if err != nil {
-		log.Fatal(err)
-	}
 	faceOpt := &truetype.Options{
 		Size:    14,
 		DPI:     72,
 		Hinting: font.HintingFull,
 	}
-	face := truetype.NewFace(ttf, faceOpt)
+	face := truetype.NewFace(c.fontTTF, faceOpt)
 	fontHeight := int(face.Metrics().Height) / int(faceOpt.DPI)
 	linesCount := strings.Count(c.Text, "\n")
 	textHeight := fontHeight * linesCount

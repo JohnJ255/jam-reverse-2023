@@ -3,10 +3,12 @@ package loader
 import (
 	"embed"
 	"fmt"
+	"github.com/golang/freetype/truetype"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/audio/mp3"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"io"
 )
 
 const SampleRate = 44100
@@ -57,4 +59,25 @@ func (r *ResourceLoader) GetSoundList() []string {
 	}
 
 	return res
+}
+
+func (r *ResourceLoader) LoadFont(name string) *truetype.Font {
+	if _, ok := FontFilenames[name]; !ok {
+		return nil
+	}
+	path := "misc/"
+	file, err := embedResource.Open(path + FontFilenames[name])
+	if err != nil {
+		panic(err)
+	}
+	bytes, err := io.ReadAll(file)
+	if err != nil {
+		panic(err)
+	}
+	ttf, err := truetype.Parse(bytes)
+	if err != nil {
+		panic(err)
+	}
+
+	return ttf
 }

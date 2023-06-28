@@ -2,9 +2,10 @@ package framework
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/hajimehoshi/ebiten/v2/text"
 	"github.com/hajimehoshi/ebiten/v2/vector"
+	"golang.org/x/image/font"
 	"image/color"
 )
 
@@ -16,15 +17,17 @@ type Button struct {
 	StrokeColor color.Color
 	position    Vec2
 	size        Size
+	fontFace    font.Face
 }
 
-func NewButton(text string, onClick func()) *Button {
+func NewButton(text string, onClick func(), fontFace font.Face) *Button {
 	return &Button{
 		IsVisible:   true,
 		Text:        text,
 		OnClick:     onClick,
 		FillColor:   color.NRGBA{100, 100, 100, 255},
 		StrokeColor: color.White,
+		fontFace:    fontFace,
 	}
 }
 
@@ -33,7 +36,7 @@ func (b *Button) Draw(screen *ebiten.Image, x, y, w, h int) {
 	b.size = Size{float64(w), float64(h)}
 	vector.DrawFilledRect(screen, float32(x), float32(y), float32(w), float32(h), b.FillColor, false)
 	vector.StrokeRect(screen, float32(x), float32(y), float32(w), float32(h), 2, b.StrokeColor, false)
-	ebitenutil.DebugPrintAt(screen, b.Text, x+w/2-len(b.Text)*3, y+h/2-5)
+	text.Draw(screen, b.Text, b.fontFace, x+w/2-len(b.Text)*3, y+h/2+5, color.NRGBA{230, 240, 250, 255})
 }
 
 func (b *Button) Update() {

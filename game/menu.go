@@ -22,11 +22,11 @@ func NewMenu(game *Game) *Menu {
 		framework.NewButton("New game", func() {
 			m.game.menu.IsOpened = false
 			m.game.level.Change(m.game.f, 1)
-		}),
+		}, m.game.fontGUI),
 		framework.NewButton("Restart level", func() {
 			m.game.menu.IsOpened = false
 			m.game.level.Change(m.game.f, m.game.level.index)
-		}),
+		}, m.game.fontGUI),
 		framework.NewButton("Next level", func() {
 			m.game.menu.IsOpened = false
 			if m.game.level.index == LastLevelIndex || m.game.level.index == 0 {
@@ -38,19 +38,19 @@ func NewMenu(game *Game) *Menu {
 					m.game.level.Score -= NewLevelScore
 				}
 			}
-		}),
-		framework.NewButton("Sound >>", func() {
+		}, m.game.fontGUI),
+		framework.NewButton("Sound ++", func() {
 			m.game.SoundMasterVolume = framework.Limited(m.game.SoundMasterVolume+0.1, 0, 1)
 			m.game.f.Audio.SetMasterVolume(m.game.SoundMasterVolume)
-		}),
-		framework.NewButton("<< Sound", func() {
+		}, m.game.fontGUI),
+		framework.NewButton("-- Sound", func() {
 			m.game.SoundMasterVolume = framework.Limited(m.game.SoundMasterVolume-0.1, 0, 1)
 			m.game.f.Audio.SetMasterVolume(m.game.SoundMasterVolume)
-		}),
+		}, m.game.fontGUI),
 		framework.NewButton("About", func() {
 			m.game.menu.IsOpened = false
 			m.game.level.Change(m.game.f, LastLevelIndex)
-		}),
+		}, m.game.fontGUI),
 	}
 	return m
 }

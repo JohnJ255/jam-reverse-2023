@@ -81,3 +81,7 @@ var SoundsFilenames = map[string]string{
 	"win":        "finish_level.mp3",
 	"collide":    "collide.mp3",
 }
+
+var FontFilenames = map[string]string{
+	"default": "EvilEmpire.ttf",
+}
