@@ -20,11 +20,17 @@ func (p *PhysicTop) ProcessingCollide(obj IPhysicsObject, collide *Collide) {
 			pos.X += cs.MoveOut.X
 			pos.Y += cs.MoveOut.Y
 
-			sign := p.calcAngleStep(other.GetMass() / obj.GetMass())
-			if obj.GetRotation().LefterThan((*cs.MoveOut).ToRadian()) {
+			angle := obj.GetPosition().Sub(*cs.Center).ToRadian()
+
+			sign := -p.calcAngleStep(other.GetMass() / obj.GetMass())
+			if angle.LefterThan((*cs.MoveOut).ToRadian()) {
 				sign *= -1
 			}
-			obj.SetRotation(obj.GetRotation() + sign)
+			k := 0.01
+			if obj.GetMass() > 200 {
+				k = 3
+			}
+			obj.SetRotation(obj.GetRotation() + (sign * Radian(k)))
 
 		}
 		obj.SetPosition(pos)

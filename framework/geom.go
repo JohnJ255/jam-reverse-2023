@@ -123,6 +123,16 @@ func (r Radian) Normalize() Radian {
 	return r
 }
 
+func (r Radian) NormalizePi2() Radian {
+	for r < -math.Pi/2 {
+		r += 2 * math.Pi
+	}
+	for r >= 3*math.Pi/2 {
+		r -= 2 * math.Pi
+	}
+	return r
+}
+
 func (v Vec2) Add(other Vec2) Vec2 {
 	return Vec2{v.X + other.X, v.Y + other.Y}
 }
@@ -170,6 +180,11 @@ func (v Vec2) Rotate(angle Radian) Vec2 {
 
 func (v Vec2) RotateAround(angle Radian, b Vec2) Vec2 {
 	return v.Sub(b).Rotate(angle).Add(b)
+}
+
+func (v Vec2) InRectWithoutRotation(pos Vec2, size Size) bool {
+	v = v.Sub(pos)
+	return v.X >= 0 && v.X <= size.Length && v.Y >= 0 && v.Y <= size.Height
 }
 
 func CalcCenter(points []Vec2) *Vec2 {

@@ -43,8 +43,6 @@ func (c *PlayerCarControl) Start(f *framework.Framework) {
 		c.OnCollide(collide)
 	}
 	c.f = f
-	f.Audio.SetVolume("forward", 0.1)
-	f.Audio.SetVolume("reverse", 0.1)
 	f.Events.AddListener("Forward", func(event *framework.Event) {
 		f.Audio.PlayMany("forward", 600)
 	})

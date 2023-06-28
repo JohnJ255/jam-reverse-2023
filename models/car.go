@@ -155,9 +155,9 @@ func (c *Car) TowbarToggle() {
 
 func (c *Car) OnTrailerContacts(contact framework.ContactSet) {
 	if c.Trailer != nil {
-		c.Position.X += contact.MoveOut.X
-		c.Position.Y += contact.MoveOut.Y
-
+		k := contact.MoveOut.Length()
+		c.Position.X += k * math.Cos(float64(c.Position.Angle))
+		c.Position.Y += k * math.Sin(float64(c.Position.Angle))
 	}
 }
 
