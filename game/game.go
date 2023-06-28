@@ -42,7 +42,7 @@ func NewGame() *Game {
 	}
 
 	g := &Game{
-		Name: "Reverse Car",
+		Name: "Reverse to the Garage",
 		WindowSize: framework.IntSize{
 			Width:  800,
 			Height: 600,
