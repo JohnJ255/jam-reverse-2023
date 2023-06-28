@@ -10,8 +10,20 @@ import (
 
 const NewLevelScore = 1000
 
+const (
+	LevelIndex1 = iota + 1
+	LevelIndex2
+	LevelIndex3
+	LevelIndex4
+	LevelIndex5
+	LevelIndex6
+
+	LastLevelIndex
+)
+
 type ILevelFillter interface {
 	Fill(level *LevelManager)
+	GetSize() framework.Size
 }
 
 type LevelManager struct {
@@ -49,7 +61,9 @@ func (l *LevelManager) GetPlayer() framework.Entity {
 }
 
 func (l *LevelManager) Update(dt float64) {
-	l.camera.Control(l.player)
+	if l.camera != nil && l.player != nil {
+		l.camera.Control(l.player)
+	}
 }
 
 func (l *LevelManager) GetSize() framework.Size {
@@ -57,6 +71,7 @@ func (l *LevelManager) GetSize() framework.Size {
 }
 
 func (l *LevelManager) GetTransforms(scale float64) *ebiten.DrawImageOptions {
+	l.Sprite.SetToSize(l.size)
 	return l.Sprite.PivotTransform(scale, framework.VecUV{})
 }
 
@@ -65,17 +80,25 @@ func (l *LevelManager) Change(f *framework.Framework, index int) {
 		f.RemoveEntity(entity)
 	}
 	f.FlushCollisions()
-	if l.index < index {
-		f.Audio.SetVolume("win", 0.2)
-		f.Audio.PlayOnce("win")
-	}
 
-	l.Score += NewLevelScore
+	if index == 1 {
+		l.Score = 0
+	}
+	if index > 0 && index != LastLevelIndex {
+		l.Score += NewLevelScore
+
+		if l.index < index {
+			f.Audio.PlayOnce("win")
+		}
+	}
 	l.Sprite.Imgs = make([]*ebiten.Image, 0)
-	l.LoadResources(&loader.ResourceLoader{}, loader.LevelFileNames[index])
 	l.index = index
 	l.name = l.makeName(index)
-	l.Fill()
+
+	if _, ok := loader.LevelFileNames[index]; ok {
+		l.LoadResources(&loader.ResourceLoader{}, loader.LevelFileNames[index])
+		l.Fill()
+	}
 }
 
 func (l *LevelManager) AddEntity(entity framework.Entity) {
@@ -88,20 +111,19 @@ func (l *LevelManager) makeName(index int) string {
 }
 
 func (l *LevelManager) Fill() {
-	var levelFiller ILevelFillter
-
-	switch l.name {
-	case "level 1":
-		levelFiller = &Level1{}
-	case "level 2":
-		levelFiller = &Level2{}
-	case "level 3":
-		levelFiller = &Level3{}
-	case "level 4":
-		levelFiller = &Level4{}
-	case "level 5":
-		levelFiller = &Level5{}
+	levels := []ILevelFillter{
+		nil,
+		&Level1{},
+		&Level2{},
+		&Level3{},
+		&Level4{},
+		&Level5{},
+		&Level6{},
+		&LevelAbout{},
 	}
+
+	levelFiller := levels[l.index]
+	l.size = levelFiller.GetSize()
 
 	levelFiller.Fill(l)
 }

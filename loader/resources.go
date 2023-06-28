@@ -60,6 +60,18 @@ var LevelFileNames = map[int]*ImageResource{
 			"level1.png",
 		},
 	},
+	6: {
+		Rotation: framework.AngleRight,
+		Filenames: []string{
+			"level1.png",
+		},
+	},
+	7: {
+		Rotation: framework.AngleRight,
+		Filenames: []string{
+			"about.png",
+		},
+	},
 }
 
 var SoundsFilenames = map[string]string{
