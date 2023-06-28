@@ -116,7 +116,7 @@ func (g *Game) Start(f *framework.Framework) {
 
 	//f.MakeConsoleCommand("towbar 1")
 	//f.MakeConsoleCommand("trailer 1")
-	//f.MakeConsoleCommand("show_collisions 1")
+	f.MakeConsoleCommand("show_collisions 1")
 }
 
 func (g *Game) Update(dt float64) error {

@@ -41,7 +41,11 @@ func (l *Level1) makeWallsCollisions(level *LevelManager) {
 	wall = entities.NewWall(framework.Vec2{114, 225}, framework.Size{WallWidth, 75})
 	wall.AddComponent(components.NewFixedCollision(wall))
 	level.AddEntity(wall)
-	wall = entities.NewWall(framework.Vec2{40, 300}, framework.Size{75, WallWidth})
+
+	wall = entities.NewWall(framework.Vec2{40, 100}, framework.Size{75, 215})
+	wall.AddComponent(components.NewFixedCollision(wall))
+	level.AddEntity(wall)
+	wall = entities.NewWall(framework.Vec2{40, 100}, framework.Size{200, 115})
 	wall.AddComponent(components.NewFixedCollision(wall))
 	level.AddEntity(wall)
 
