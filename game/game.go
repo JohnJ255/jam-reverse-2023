@@ -30,7 +30,7 @@ type Game struct {
 
 func NewGame(ttf *truetype.Font) *Game {
 	faceOpt := &truetype.Options{
-		Size:    14,
+		Size:    20,
 		DPI:     72,
 		Hinting: font.HintingFull,
 	}
@@ -148,9 +148,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 func (g *Game) DrawGUI(screen *ebiten.Image) {
 	if g.level.index > 0 {
 		if g.level.index != LastLevelIndex {
-			text.Draw(screen, g.level.name, g.fontGUI, 300, 15, color.White)
+			text.Draw(screen, g.level.name, g.fontGUI, 300, 19, color.White)
 		}
-		text.Draw(screen, fmt.Sprintf("Score: %d", g.level.Score), g.fontGUI, 400, 15, color.White)
+		text.Draw(screen, fmt.Sprintf("Score: %d", g.level.Score), g.fontGUI, 400, 19, color.White)
 	}
 
 	if g.menu.IsOpened {
